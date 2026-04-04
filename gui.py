@@ -52,13 +52,11 @@ LINK       = "#22D3EE"
 GOLD       = "#1E293B"
 LIGHT_GOLD = "#050B18"
 
-# Accessibility-forward desktop text scale: aims for a comfortable reading baseline
-# close to common 16px+ guidance for body copy, with proportional headings.
-FONT_TITLE  = ("Segoe UI", 22, "bold")
-FONT_HEADER = ("Segoe UI", 17, "bold")
-FONT_BODY   = ("Segoe UI", 13)
-FONT_SMALL  = ("Segoe UI", 12)
-FONT_LABEL  = ("Segoe UI", 13, "bold")
+FONT_TITLE  = ("Segoe UI", 20, "bold")
+FONT_HEADER = ("Segoe UI", 15, "bold")
+FONT_BODY   = ("Segoe UI", 12)
+FONT_SMALL  = ("Segoe UI", 11)
+FONT_LABEL  = ("Segoe UI", 12, "bold")
 PROFILE_EXTENSIONS = (".png", ".jpg", ".jpeg", ".webp", ".bmp")
 
 
@@ -264,7 +262,7 @@ def _render_profile_photo(parent, user, width=140, height=170):
                 continue
 
     initials = "".join(part[:1] for part in user.get("name", "User").split()[:2]).upper() or "U"
-    _lbl(inner, initials, ("Segoe UI", 30, "bold"), NAVY, WHITE).pack(expand=True, pady=(22, 6))
+    _lbl(inner, initials, ("Segoe UI", 28, "bold"), NAVY, WHITE).pack(expand=True, pady=(22, 6))
     _lbl(inner, "Profile Photo", FONT_SMALL, MUTED, WHITE).pack(pady=(0, 12))
     return frame
 
@@ -554,7 +552,7 @@ class MentorApp(tk.Tk):
             background=WHITE,
             fieldbackground=WHITE,
             foreground=TEXT,
-            rowheight=34,
+            rowheight=30,
             bordercolor=BORDER,
             lightcolor=BORDER,
             darkcolor=BORDER,
@@ -565,7 +563,7 @@ class MentorApp(tk.Tk):
             foreground="#BAE6FD",
             bordercolor=BORDER,
             relief="flat",
-            font=("Segoe UI", 12, "bold"),
+            font=("Segoe UI", 10, "bold"),
         )
         style.map(
             "Treeview",
@@ -581,9 +579,6 @@ class LoginFrame(tk.Frame):
         super().__init__(parent, bg="#0F172A")
         self.app = app
         self.photo_image = None  # Keep reference to prevent garbage collection
-        self.login_image_original = None
-        self.login_image_label = None
-        self.login_image_box = None
         self.save_password_var = tk.BooleanVar(value=False)
         self.show_password_var = tk.BooleanVar(value=False)
         self.input_shells = {}
@@ -635,44 +630,28 @@ class LoginFrame(tk.Frame):
         ).pack(anchor="center", pady=8)
 
     def _build_image_panel(self, panel):
-        """Try to load and display a full-bleed image, fallback to colored placeholder."""
-        base_dir = os.path.dirname(__file__)
-        # Prefer bundled project assets so the login artwork loads no matter
-        # which directory the app is launched from.
+        """Try to load and display an image, fallback to colored placeholder."""
+        # Try to load image files in common locations
         image_paths = [
-            os.path.join(base_dir, "images", "kiit_campus_aerial.jpg"),
-            os.path.join(base_dir, "images", "kiit_campus_aerial.jpeg"),
-            os.path.join(base_dir, "images", "kiit_campus_aerial.png"),
-            os.path.join(base_dir, "images", "kiit_building.jpg"),
-            os.path.join(base_dir, "images", "kiit.png"),
-            os.path.join(base_dir, "images", "kiit.jpg"),
-            os.path.join(base_dir, "images", "kiit_building.png"),
-            os.path.join(base_dir, "kiit.png"),
-            os.path.join(base_dir, "kiit.jpg"),
-            "./kiit.png",
-            "./kiit.jpg",
-            "./kiit_building.png",
-            "./images/kiit.png",
-            "./images/kiit_building.jpg",
+            "./kiit.png", "./kiit.jpg", "./kiit_building.png",
+            "./images/kiit.png", "./images/kiit_building.jpg",
+            os.path.join(os.path.dirname(__file__), "kiit.png"),
+            os.path.join(os.path.dirname(__file__), "kiit.jpg"),
         ]
 
         image_loaded = False
         image_box = tk.Frame(panel, bg="#0B1220", highlightbackground="#334155", highlightthickness=1)
         image_box.pack(expand=True, padx=22, pady=22, fill="both")
-        self.login_image_box = image_box
-        self.login_image_label = None
-        self.login_image_original = None
 
         if PIL_AVAILABLE:
             for path in image_paths:
                 if os.path.exists(path):
                     try:
-                        with Image.open(path) as img:
-                            self.login_image_original = img.convert("RGB").copy()
-                        self.login_image_label = tk.Label(image_box, bg="#0B1220", bd=0, highlightthickness=0)
-                        self.login_image_label.pack(fill="both", expand=True)
-                        image_box.bind("<Configure>", self._refresh_login_image)
-                        image_box.after_idle(self._refresh_login_image)
+                        img = Image.open(path)
+                        img.thumbnail((520, 420), Image.Resampling.LANCZOS)
+                        self.photo_image = ImageTk.PhotoImage(img)
+                        img_label = tk.Label(image_box, image=self.photo_image, bg="#0B1220")
+                        img_label.pack(expand=True, padx=16, pady=16)
                         image_loaded = True
                         break
                     except Exception:
@@ -684,7 +663,7 @@ class LoginFrame(tk.Frame):
             _lbl(
                 placeholder,
                 "KALINGA INSTITUTE OF INDUSTRIAL\nTECHNOLOGY UNIVERSITY",
-                ("Segoe UI", 18, "bold"),
+                ("Segoe UI", 16, "bold"),
                 "#E2E8F0",
                 "#1E3A8A",
                 justify="center",
@@ -692,39 +671,16 @@ class LoginFrame(tk.Frame):
             _lbl(
                 placeholder,
                 "Mentor-Mentee Excellence Platform",
-                ("Segoe UI", 13),
+                ("Segoe UI", 11),
                 "#BFDBFE",
                 "#1E3A8A",
             ).pack(pady=(0, 18))
-
-    def _refresh_login_image(self, event=None):
-        if not (PIL_AVAILABLE and self.login_image_original and self.login_image_label and self.login_image_box):
-            return
-
-        if event:
-            width, height = event.width, event.height
-        else:
-            width = self.login_image_box.winfo_width()
-            height = self.login_image_box.winfo_height()
-
-        if width < 2 or height < 2:
-            return
-
-        # Crop-to-fill keeps the image edge-to-edge inside the framed panel.
-        fitted = ImageOps.fit(
-            self.login_image_original,
-            (width, height),
-            method=Image.Resampling.LANCZOS,
-            centering=(0.5, 0.5),
-        )
-        self.photo_image = ImageTk.PhotoImage(fitted)
-        self.login_image_label.configure(image=self.photo_image)
 
     def _styled_login_entry(self, parent, secret=False):
         shell = tk.Frame(parent, bg="#15213A", highlightbackground="#334155", highlightthickness=1)
         entry = tk.Entry(
             shell,
-            font=("Segoe UI", 13),
+            font=("Segoe UI", 11),
             relief="flat",
             bd=0,
             show="*" if secret else "",
@@ -747,13 +703,13 @@ class LoginFrame(tk.Frame):
 
     def _build_form_panel(self, panel):
         """Build the login form."""
-        _lbl(panel, "Menor Mentee Portal", ("Segoe UI", 29, "bold"), "#F8FAFC", "#111C33").pack(
+        _lbl(panel, "Menor Mentee Portal", ("Segoe UI", 27, "bold"), "#F8FAFC", "#111C33").pack(
             anchor="w", pady=(14, 2)
         )
         _lbl(
             panel,
             "Welcome to KIIT University Portal.*",
-            ("Segoe UI", 15, "bold"),
+            ("Segoe UI", 13, "bold"),
             "#22D3EE",
             "#111C33",
         ).pack(anchor="w", pady=(0, 10))
@@ -769,7 +725,7 @@ class LoginFrame(tk.Frame):
             ("Roll No.", "l_roll", False),
             ("Password", "l_pass", True),
         ]):
-            _lbl(panel, lbl + " *", ("Segoe UI", 12, "bold"), "#CBD5E1", "#111C33").pack(anchor="w", pady=(8, 4))
+            _lbl(panel, lbl + " *", ("Segoe UI", 11, "bold"), "#CBD5E1", "#111C33").pack(anchor="w", pady=(8, 4))
             shell, e = self._styled_login_entry(panel, secret=secret)
             shell.pack(anchor="w", fill="x", pady=(0, 12))
             key = "roll" if not secret else "pass"
@@ -816,7 +772,7 @@ class LoginFrame(tk.Frame):
             command=self._do_login,
             bg="#0EA5E9",
             fg="#F8FAFC",
-            font=("Segoe UI", 13, "bold"),
+            font=("Segoe UI", 12, "bold"),
             relief="flat",
             padx=18,
             pady=9,
@@ -1007,7 +963,7 @@ class DashboardFrame(tk.Frame):
                 36,
                 text=f"Welcome back, {user.get('name', 'User').split()[0]}",
                 fill="#F8FAFC",
-                font=("Segoe UI", 23, "bold"),
+                font=("Segoe UI", 21, "bold"),
                 anchor="w",
             )
             hero.create_text(
@@ -1015,7 +971,7 @@ class DashboardFrame(tk.Frame):
                 74,
                 text="High-impact mentorship workspace for fast, focused growth.",
                 fill="#BFDBFE",
-                font=("Segoe UI", 13),
+                font=("Segoe UI", 11),
                 anchor="w",
             )
 
@@ -1029,7 +985,7 @@ class DashboardFrame(tk.Frame):
                 chip = tk.Frame(chips, bg="#111827", highlightthickness=1, highlightbackground="#334155")
                 chip.pack(side="left", padx=8)
                 _lbl(chip, f" {title} ", FONT_SMALL, "#94A3B8", "#111827").pack(anchor="w", padx=8, pady=(6, 0))
-                _lbl(chip, f" {value} ", ("Segoe UI", 13, "bold"), "#F8FAFC", "#111827").pack(anchor="w", padx=8, pady=(0, 7))
+                _lbl(chip, f" {value} ", ("Segoe UI", 12, "bold"), "#F8FAFC", "#111827").pack(anchor="w", padx=8, pady=(0, 7))
             hero.create_window(24, 132, window=chips, anchor="nw")
 
         hero.bind("<Configure>", draw_gradient)
@@ -1521,14 +1477,14 @@ class MessagingFrame(tk.Frame):
         pane.pack(fill="both", expand=True, padx=10, pady=10)
 
         left = _card(self, 0, 0)
-        pane.add(left, minsize=380)
+        pane.add(left, minsize=320)
         tk.Label(left, text="  Conversations", font=FONT_HEADER, fg=NAVY, bg=LIGHT_BLUE, anchor="w").pack(
             fill="x", pady=(0, 4)
         )
         self.inbox_lb = tk.Listbox(
             left,
             font=FONT_BODY,
-            width=46,
+            width=34,
             bg="#0B1220",
             fg=TEXT,
             selectbackground=BLUE,
@@ -1561,9 +1517,8 @@ class MessagingFrame(tk.Frame):
         self.chat_scroll.pack(side="right", fill="y")
         self.chat_canvas.pack(side="left", fill="both", expand=True)
         self.chat_body = tk.Frame(self.chat_canvas, bg="#0B1220")
-        self.chat_body_window = self.chat_canvas.create_window((0, 0), window=self.chat_body, anchor="nw")
-        self.chat_body.bind("<Configure>", self._sync_chat_scrollregion)
-        self.chat_canvas.bind("<Configure>", self._resize_chat_body)
+        self.chat_canvas.create_window((0, 0), window=self.chat_body, anchor="nw")
+        self.chat_body.bind("<Configure>", lambda e: self.chat_canvas.configure(scrollregion=self.chat_canvas.bbox("all")))
 
         send_row = tk.Frame(right, bg=WHITE, pady=6)
         send_row.pack(fill="x", padx=6, pady=(0, 6))
@@ -1588,9 +1543,10 @@ class MessagingFrame(tk.Frame):
         self._session_id = None
         self.inbox_lb.delete(0, "end")
         self._inbox_data = messaging.get_inbox(u["user_id"])
-        for item in self._inbox_data:
-            label = self._normalize_text(item.get("thread_label", "Untitled thread"), limit=52)
-            self.inbox_lb.insert("end", f" {label}")
+        for idx, item in enumerate(self._inbox_data, start=1):
+            label = self._normalize_text(item.get("thread_label", "Untitled thread"), limit=74)
+            count = item.get("message_count", 0)
+            self.inbox_lb.insert("end", f" {idx:02d}. {label} ({count})")
 
         if self._inbox_data:
             selected_index = 0
@@ -1671,12 +1627,6 @@ class MessagingFrame(tk.Frame):
         holder.pack(fill="both", expand=True, pady=22)
         _lbl(holder, text, FONT_BODY, MUTED, "#0B1220").pack(anchor="center")
 
-    def _sync_chat_scrollregion(self, _event=None):
-        self.chat_canvas.configure(scrollregion=self.chat_canvas.bbox("all"))
-
-    def _resize_chat_body(self, event):
-        self.chat_canvas.itemconfigure(self.chat_body_window, width=event.width)
-
     def _add_bubble(self, index, sender_name, timestamp, message, mine=False):
         row = tk.Frame(self.chat_body, bg="#0B1220")
         row.pack(fill="x", pady=6, padx=10)
@@ -1691,7 +1641,7 @@ class MessagingFrame(tk.Frame):
         _lbl(
             bubble,
             f" #{index:02d}  {sender_name}   {timestamp} ",
-            ("Segoe UI", 10, "bold"),
+            ("Segoe UI", 9, "bold"),
             "#A5F3FC" if mine else "#94A3B8",
             bubble_bg,
         ).pack(anchor="w", padx=8, pady=(6, 2))
@@ -1879,7 +1829,7 @@ class AnalyticsFrame(tk.Frame):
         style = ttk.Style()
         style.configure("KIIT.Treeview.Heading",
                         background=BLUE, foreground="white", font=FONT_LABEL)
-        style.configure("KIIT.Treeview", rowheight=32, font=FONT_BODY)
+        style.configure("KIIT.Treeview", rowheight=26, font=FONT_BODY)
         style.map("KIIT.Treeview",
                   background=[("selected", LIGHT_BLUE)],
                   foreground=[("selected", NAVY)])
