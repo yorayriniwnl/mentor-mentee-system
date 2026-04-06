@@ -136,16 +136,18 @@ def root():
                 const roll = document.getElementById('roll').value.trim();
                 const pass = document.getElementById('pass').value;
                 if(!roll||!pass){document.getElementById('status').innerText='Enter roll and password';return}
-                const res = await fetch('/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({roll_no:roll,password:pass})});
+                const res = await fetch('/token',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({roll_no:roll,password:pass})});
                 const data = await res.json().catch(()=>({ok:false,error:'Invalid response'}));
                 if(res.ok && data.ok){
                   document.getElementById('status').innerText = 'Logged in: '+(data.user.name||data.user.roll_no);
                   window.currentUser = data.user;
+                  window.token = data.token;
                   document.getElementById('mentee_id').value = data.user.user_id || '';
                 } else {
                   document.getElementById('status').innerText = data.error || 'Login failed';
                 }
                 loadMentors();
+                loadSessions();
               }
 
               async function loadMentors(){
@@ -166,13 +168,16 @@ def root():
                 }
               }
 
+              function getAuthHeaders(){ return window.token ? {'Authorization':'Bearer '+window.token} : {}; }
+
               async function createSession(){
                 const mentor_id = document.getElementById('mentor_id').value.trim();
                 const mentee_id = (window.currentUser && window.currentUser.user_id) || document.getElementById('mentee_id').value.trim();
                 const date = document.getElementById('date').value;
                 const time = document.getElementById('time').value;
                 if(!mentor_id||!mentee_id||!date||!time){document.getElementById('session_status').innerText='Please fill all fields';return}
-                const res = await fetch('/sessions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mentor_id,mentee_id,date,time})});
+                const headers = Object.assign({'Content-Type':'application/json'}, getAuthHeaders());
+                const res = await fetch('/sessions',{method:'POST',headers:headers,body:JSON.stringify({mentor_id,mentee_id,date,time})});
                 const data = await res.json().catch(()=>({ok:false,error:'Invalid response'}));
                 if(res.ok && data.ok){
                   document.getElementById('session_status').innerText = 'Created session: '+(data.session.session_id||'');
@@ -186,7 +191,7 @@ def root():
                   const userId = (window.currentUser && window.currentUser.user_id) || '';
                   const url = userId ? `/sessions?user_id=${encodeURIComponent(userId)}` : '/sessions';
                   try{
-                    const res = await fetch(url);
+                    const res = await fetch(url, { headers: getAuthHeaders() });
                     const data = await res.json().catch(()=>({ok:false}));
                     const container = document.getElementById('sessions');
                     container.innerHTML = '';
@@ -215,7 +220,7 @@ def root():
                           btn.onclick = async ()=>{
                             if(!confirm('Cancel session ' + (s.session_id||'') + '?')) return;
                             try{
-                              const res = await fetch(`/sessions/${encodeURIComponent(s.session_id)}/cancel`, { method: 'POST' });
+                              const res = await fetch(`/sessions/${encodeURIComponent(s.session_id)}/cancel`, { method: 'POST', headers: getAuthHeaders() });
                               const j = await res.json().catch(()=>({ok:false}));
                               if(res.ok && j.ok){
                                 loadSessions();
