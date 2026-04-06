@@ -5,10 +5,37 @@ Passwords are hashed with bcrypt; plain-text is never stored.
 
 import re
 from typing import Optional, Tuple
+import os
+import jwt
+from datetime import datetime, timezone, timedelta
 
 import bcrypt
 
 import database as db
+
+# JWT configuration
+JWT_SECRET = os.environ.get("JWT_SECRET") or os.environ.get("SECRET_KEY") or "dev-secret"
+
+
+def generate_token(user_id: str, hours: int = 4) -> str:
+    """Generate a JWT for a user_id valid for `hours` hours."""
+    now = datetime.now(timezone.utc)
+    payload = {"user_id": user_id, "iat": now, "exp": now + timedelta(hours=hours)}
+    token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
+    # PyJWT may return bytes in older versions — ensure string
+    if isinstance(token, bytes):
+        token = token.decode("utf-8")
+    return token
+
+
+def decode_token(token: str) -> Optional[dict]:
+    """Decode a JWT and return the payload, or None on error/expiry."""
+    try:
+        return jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+    except jwt.ExpiredSignatureError:
+        return None
+    except Exception:
+        return None
 
 # ─────────────────────────── Password helpers ───────────────────
 

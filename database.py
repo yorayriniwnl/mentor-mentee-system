@@ -6,7 +6,7 @@ All modules interact with data exclusively through this layer.
 import json
 import os
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 DATA_FILE = os.path.join(os.path.dirname(__file__), "data.json")
@@ -113,7 +113,8 @@ def generate_id(prefix: str = "") -> str:
 
 
 def now_iso() -> str:
-    return datetime.now().isoformat()
+    # Use timezone-aware UTC timestamps for consistency across environments
+    return datetime.now(timezone.utc).isoformat()
 
 
 # ─────────────────────────── Users ──────────────────────────────
@@ -278,11 +279,24 @@ def get_conversation(user_a: str, user_b: str, session_id: Optional[str] = None)
 
 def create_message(message: Dict) -> Dict:
     data = _load()
+    # Accept either 'text' or 'content' as the message body — normalize to both.
+    if "text" not in message and "content" in message:
+        message["text"] = message["content"]
+    if "content" not in message and "text" in message:
+        message["content"] = message["text"]
+
     message.setdefault("message_id", generate_id("m"))
     message.setdefault("timestamp", now_iso())
     message.setdefault("flagged", False)
     if "session_id" in message:
         message["session_id"] = _normalize_session_id(message["session_id"])
+
+    # Ensure both keys exist for compatibility across modules
+    if "text" in message and "content" not in message:
+        message["content"] = message["text"]
+    if "content" in message and "text" not in message:
+        message["text"] = message["content"]
+
     data["messages"].append(message)
     _save(data)
     return message

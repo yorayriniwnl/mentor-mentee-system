@@ -8,6 +8,7 @@ from pathlib import Path
 
 from flask import Flask, jsonify, request, g
 from functools import wraps
+import logging
 import auth
 import database
 import os
@@ -285,34 +286,25 @@ def http_login():
     return jsonify({"ok": True, "user": user})
 
 
-# JWT token helpers / endpoints
-JWT_SECRET = os.environ.get("JWT_SECRET") or os.environ.get("SECRET_KEY") or "dev-secret"
-
-def _decode_token(token: str):
-  try:
-    return jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-  except jwt.ExpiredSignatureError:
-    return None
-  except Exception:
-    return None
+logging.basicConfig(level=logging.INFO)
 
 
 def require_auth(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        auth_header = request.headers.get("Authorization", "") or request.headers.get("authorization", "")
-        if not auth_header.startswith("Bearer "):
-            return jsonify({"ok": False, "error": "missing token"}), 401
-        token = auth_header.split(None, 1)[1]
-        payload = _decode_token(token)
-        if not payload:
-            return jsonify({"ok": False, "error": "invalid token"}), 401
-        user = database.get_user_by_id(payload.get("user_id"))
-        if not user:
-            return jsonify({"ok": False, "error": "user not found"}), 404
-        g.current_user = {k: v for k, v in user.items() if k != "password"}
-        return func(*args, **kwargs)
-    return wrapper
+  @wraps(func)
+  def wrapper(*args, **kwargs):
+    auth_header = request.headers.get("Authorization", "") or request.headers.get("authorization", "")
+    if not auth_header.startswith("Bearer "):
+      return jsonify({"ok": False, "error": "missing token"}), 401
+    token = auth_header.split(None, 1)[1]
+    payload = auth.decode_token(token)
+    if not payload:
+      return jsonify({"ok": False, "error": "invalid token"}), 401
+    user = database.get_user_by_id(payload.get("user_id"))
+    if not user:
+      return jsonify({"ok": False, "error": "user not found"}), 404
+    g.current_user = {k: v for k, v in user.items() if k != "password"}
+    return func(*args, **kwargs)
+  return wrapper
 
 
 @app.post("/token")
@@ -325,11 +317,7 @@ def http_token():
   ok, user = auth.login(roll_no, password)
   if not ok:
     return jsonify({"ok": False, "error": "invalid credentials"}), 401
-  payload = {
-    "user_id": user.get("user_id"),
-    "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=4),
-  }
-  token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
+  token = auth.generate_token(user.get("user_id"))
   return jsonify({"ok": True, "token": token, "user": user})
 
 
@@ -339,7 +327,7 @@ def http_me():
   if not auth_header.startswith("Bearer "):
     return jsonify({"ok": False, "error": "missing token"}), 401
   token = auth_header.split(None, 1)[1]
-  payload = _decode_token(token)
+  payload = auth.decode_token(token)
   if not payload:
     return jsonify({"ok": False, "error": "invalid token"}), 401
   user = database.get_user_by_id(payload.get("user_id"))
@@ -370,15 +358,33 @@ def http_create_user():
     required = ("name", "roll_no", "email", "password")
     if not all(k in data for k in required):
         return jsonify({"ok": False, "error": "missing fields"}), 400
+
     pwd = data.pop("password")
+
+    # Check uniqueness
+    if database.get_user_by_roll_no(data.get("roll_no")):
+        return jsonify({"ok": False, "error": "roll_no already exists"}), 409
+    if database.get_user_by_email(data.get("email")):
+        return jsonify({"ok": False, "error": "email already exists"}), 409
+
+    # Validate password strength
+    ok_pw, reason = auth._strong_password(pwd)
+    if not ok_pw:
+        return jsonify({"ok": False, "error": reason}), 400
+
     hashed = auth.hash_password(pwd)
+    role = data.get("role", "mentee")
+    if role not in ("mentee", "mentor"):
+        role = "mentee"
+
     user = {
         "name": data.get("name"),
         "roll_no": data.get("roll_no"),
         "email": data.get("email"),
-        "role": data.get("role", "mentee"),
+        "role": role,
         "password": hashed,
     }
+
     created = database.create_user(user)
     safe = {k: v for k, v in created.items() if k != "password"}
     return jsonify({"ok": True, "user": safe}), 201
