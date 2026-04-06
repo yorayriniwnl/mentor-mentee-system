@@ -6,7 +6,8 @@ import tempfile
 from contextlib import contextmanager, redirect_stdout
 from pathlib import Path
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, g
+from functools import wraps
 import auth
 import database
 import os
@@ -291,6 +292,24 @@ def _decode_token(token: str):
     return None
 
 
+def require_auth(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        auth_header = request.headers.get("Authorization", "") or request.headers.get("authorization", "")
+        if not auth_header.startswith("Bearer "):
+            return jsonify({"ok": False, "error": "missing token"}), 401
+        token = auth_header.split(None, 1)[1]
+        payload = _decode_token(token)
+        if not payload:
+            return jsonify({"ok": False, "error": "invalid token"}), 401
+        user = database.get_user_by_id(payload.get("user_id"))
+        if not user:
+            return jsonify({"ok": False, "error": "user not found"}), 404
+        g.current_user = {k: v for k, v in user.items() if k != "password"}
+        return func(*args, **kwargs)
+    return wrapper
+
+
 @app.post("/token")
 def http_token():
   data = request.get_json(silent=True) or {}
@@ -386,6 +405,7 @@ def http_get_session(session_id):
 
 
 @app.put("/sessions/<session_id>")
+@require_auth
 def http_update_session(session_id):
     data = request.get_json(silent=True) or {}
     updated = database.update_session(session_id, data)
@@ -395,6 +415,7 @@ def http_update_session(session_id):
 
 
 @app.post("/sessions")
+@require_auth
 def http_create_session():
     data = request.get_json(silent=True) or {}
     required = ("mentor_id", "mentee_id", "date", "time")
@@ -405,11 +426,12 @@ def http_create_session():
 
 
 @app.post("/sessions/<session_id>/cancel")
+@require_auth
 def http_cancel_session(session_id):
-  updated = database.update_session(session_id, {"status": "cancelled", "resolved_at": database.now_iso()})
-  if not updated:
-    return jsonify({"ok": False, "error": "not found"}), 404
-  return jsonify({"ok": True, "session": updated})
+    updated = database.update_session(session_id, {"status": "cancelled", "resolved_at": database.now_iso()})
+    if not updated:
+        return jsonify({"ok": False, "error": "not found"}), 404
+    return jsonify({"ok": True, "session": updated})
 
 
 @app.get("/messages")
@@ -424,6 +446,7 @@ def http_get_messages():
 
 
 @app.post("/messages")
+@require_auth
 def http_create_message():
     data = request.get_json(silent=True) or {}
     required = ("sender_id", "receiver_id", "text")
@@ -450,6 +473,7 @@ def http_list_feedback():
 
 
 @app.post("/feedback")
+@require_auth
 def http_create_feedback():
     data = request.get_json(silent=True) or {}
     required = ("reviewee_id", "reviewer_id", "rating")

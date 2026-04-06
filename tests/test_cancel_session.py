@@ -31,6 +31,17 @@ def test_create_and_cancel_session(client):
     assert len(mentors) > 0
     mentor_id = mentors[0]["user_id"]
 
+    # Obtain a JWT token for the mentee we just created
+    rv = client.post(
+        "/token",
+        json={"roll_no": "TST_CANCEL_001", "password": "Test123!"},
+    )
+    assert rv.status_code == 200
+    j = rv.get_json()
+    token = j.get("token")
+    assert token
+    headers = {"Authorization": f"Bearer {token}"}
+
     # Create a session
     rv = client.post(
         "/sessions",
@@ -40,6 +51,7 @@ def test_create_and_cancel_session(client):
             "date": "2026-04-07",
             "time": "09:00",
         },
+        headers=headers,
     )
     assert rv.status_code == 201
     j = rv.get_json()
@@ -47,7 +59,7 @@ def test_create_and_cancel_session(client):
     session_id = j["session"]["session_id"]
 
     # Cancel the session
-    rv = client.post(f"/sessions/{session_id}/cancel")
+    rv = client.post(f"/sessions/{session_id}/cancel", headers=headers)
     assert rv.status_code == 200
     j = rv.get_json()
     assert j and j.get("ok") is True
