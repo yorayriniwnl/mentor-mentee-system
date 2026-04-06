@@ -9,6 +9,9 @@ from pathlib import Path
 from flask import Flask, jsonify, request
 import auth
 import database
+import os
+import datetime
+import jwt
 
 app = Flask(__name__)
 
@@ -274,6 +277,52 @@ def http_login():
     if not ok:
         return jsonify({"ok": False, "error": "invalid credentials"}), 401
     return jsonify({"ok": True, "user": user})
+
+
+# JWT token helpers / endpoints
+JWT_SECRET = os.environ.get("JWT_SECRET") or os.environ.get("SECRET_KEY") or "dev-secret"
+
+def _decode_token(token: str):
+  try:
+    return jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+  except jwt.ExpiredSignatureError:
+    return None
+  except Exception:
+    return None
+
+
+@app.post("/token")
+def http_token():
+  data = request.get_json(silent=True) or {}
+  roll_no = data.get("roll_no") or data.get("roll") or data.get("username")
+  password = data.get("password", "")
+  if not roll_no or not password:
+    return jsonify({"ok": False, "error": "missing credentials"}), 400
+  ok, user = auth.login(roll_no, password)
+  if not ok:
+    return jsonify({"ok": False, "error": "invalid credentials"}), 401
+  payload = {
+    "user_id": user.get("user_id"),
+    "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=4),
+  }
+  token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
+  return jsonify({"ok": True, "token": token, "user": user})
+
+
+@app.get("/me")
+def http_me():
+  auth_header = request.headers.get("Authorization", "") or request.headers.get("authorization", "")
+  if not auth_header.startswith("Bearer "):
+    return jsonify({"ok": False, "error": "missing token"}), 401
+  token = auth_header.split(None, 1)[1]
+  payload = _decode_token(token)
+  if not payload:
+    return jsonify({"ok": False, "error": "invalid token"}), 401
+  user = database.get_user_by_id(payload.get("user_id"))
+  if not user:
+    return jsonify({"ok": False, "error": "user not found"}), 404
+  safe = {k: v for k, v in user.items() if k != "password"}
+  return jsonify({"ok": True, "user": safe})
 
 
 @app.get("/users/<user_id>")
