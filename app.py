@@ -7,6 +7,8 @@ from contextlib import contextmanager, redirect_stdout
 from pathlib import Path
 
 from flask import Flask, jsonify, request
+import auth
+import database
 
 app = Flask(__name__)
 
@@ -190,3 +192,43 @@ def demo():
         run_demo()
 
     return jsonify({"output": buffer.getvalue()})
+
+
+  # ─────────────────────── Additional API Endpoints ───────────────────────
+
+  @app.post("/login")
+  def http_login():
+    data = request.get_json(silent=True) or {}
+    roll_no = data.get("roll_no") or data.get("roll") or data.get("username")
+    password = data.get("password", "")
+    if not roll_no or not password:
+      return jsonify({"ok": False, "error": "missing credentials"}), 400
+    ok, user = auth.login(roll_no, password)
+    if not ok:
+      return jsonify({"ok": False, "error": "invalid credentials"}), 401
+    return jsonify({"ok": True, "user": user})
+
+
+  @app.get("/users/<user_id>")
+  def http_get_user(user_id):
+    profile = auth.get_profile(user_id)
+    if not profile:
+      return jsonify({"ok": False, "error": "not found"}), 404
+    return jsonify({"ok": True, "user": profile})
+
+
+  @app.get("/mentors")
+  def http_list_mentors():
+    mentors = database.get_users_by_role("mentor")
+    safe = [{k: v for k, v in u.items() if k != "password"} for u in mentors]
+    return jsonify({"ok": True, "mentors": safe})
+
+
+  @app.post("/sessions")
+  def http_create_session():
+    data = request.get_json(silent=True) or {}
+    required = ("mentor_id", "mentee_id", "date", "time")
+    if not all(k in data for k in required):
+      return jsonify({"ok": False, "error": "missing fields"}), 400
+    session = database.create_session(data)
+    return jsonify({"ok": True, "session": session}), 201
