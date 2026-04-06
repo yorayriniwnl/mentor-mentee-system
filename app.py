@@ -197,149 +197,149 @@ def demo():
     return jsonify({"output": buffer.getvalue()})
 
 
-   # ─────────────────────── Additional API Endpoints ───────────────────────
+# ─────────────────────── Additional API Endpoints ───────────────────────
 
-  @app.post("/login")
-  def http_login():
+@app.post("/login")
+def http_login():
     data = request.get_json(silent=True) or {}
     roll_no = data.get("roll_no") or data.get("roll") or data.get("username")
     password = data.get("password", "")
     if not roll_no or not password:
-      return jsonify({"ok": False, "error": "missing credentials"}), 400
+        return jsonify({"ok": False, "error": "missing credentials"}), 400
     ok, user = auth.login(roll_no, password)
     if not ok:
-      return jsonify({"ok": False, "error": "invalid credentials"}), 401
+        return jsonify({"ok": False, "error": "invalid credentials"}), 401
     return jsonify({"ok": True, "user": user})
 
 
-  @app.get("/users/<user_id>")
-  def http_get_user(user_id):
+@app.get("/users/<user_id>")
+def http_get_user(user_id):
     profile = auth.get_profile(user_id)
     if not profile:
-      return jsonify({"ok": False, "error": "not found"}), 404
+        return jsonify({"ok": False, "error": "not found"}), 404
     return jsonify({"ok": True, "user": profile})
 
 
-  @app.get("/users")
-  def http_list_users():
+@app.get("/users")
+def http_list_users():
     users = database.get_all_users()
     safe = [{k: v for k, v in u.items() if k != "password"} for u in users]
     return jsonify({"ok": True, "users": safe})
 
 
-  @app.post("/users")
-  def http_create_user():
+@app.post("/users")
+def http_create_user():
     data = request.get_json(silent=True) or {}
     required = ("name", "roll_no", "email", "password")
     if not all(k in data for k in required):
-      return jsonify({"ok": False, "error": "missing fields"}), 400
+        return jsonify({"ok": False, "error": "missing fields"}), 400
     pwd = data.pop("password")
     hashed = auth.hash_password(pwd)
     user = {
-      "name": data.get("name"),
-      "roll_no": data.get("roll_no"),
-      "email": data.get("email"),
-      "role": data.get("role", "mentee"),
-      "password": hashed,
+        "name": data.get("name"),
+        "roll_no": data.get("roll_no"),
+        "email": data.get("email"),
+        "role": data.get("role", "mentee"),
+        "password": hashed,
     }
     created = database.create_user(user)
     safe = {k: v for k, v in created.items() if k != "password"}
     return jsonify({"ok": True, "user": safe}), 201
 
 
-  @app.get("/mentors")
-  def http_list_mentors():
+@app.get("/mentors")
+def http_list_mentors():
     mentors = database.get_users_by_role("mentor")
     safe = [{k: v for k, v in u.items() if k != "password"} for u in mentors]
     return jsonify({"ok": True, "mentors": safe})
 
 
-  @app.get("/sessions")
-  def http_list_sessions():
+@app.get("/sessions")
+def http_list_sessions():
     user_id = request.args.get("user_id")
     if user_id:
-      sessions = database.get_sessions_for_user(user_id)
+        sessions = database.get_sessions_for_user(user_id)
     else:
-      sessions = database.get_all_sessions()
+        sessions = database.get_all_sessions()
     return jsonify({"ok": True, "sessions": sessions})
 
 
-  @app.get("/sessions/<session_id>")
-  def http_get_session(session_id):
+@app.get("/sessions/<session_id>")
+def http_get_session(session_id):
     s = database.get_session_by_id(session_id)
     if not s:
-      return jsonify({"ok": False, "error": "not found"}), 404
+        return jsonify({"ok": False, "error": "not found"}), 404
     return jsonify({"ok": True, "session": s})
 
 
-  @app.put("/sessions/<session_id>")
-  def http_update_session(session_id):
+@app.put("/sessions/<session_id>")
+def http_update_session(session_id):
     data = request.get_json(silent=True) or {}
     updated = database.update_session(session_id, data)
     if not updated:
-      return jsonify({"ok": False, "error": "not found"}), 404
+        return jsonify({"ok": False, "error": "not found"}), 404
     return jsonify({"ok": True, "session": updated})
 
 
-  @app.post("/sessions")
-  def http_create_session():
+@app.post("/sessions")
+def http_create_session():
     data = request.get_json(silent=True) or {}
     required = ("mentor_id", "mentee_id", "date", "time")
     if not all(k in data for k in required):
-      return jsonify({"ok": False, "error": "missing fields"}), 400
+        return jsonify({"ok": False, "error": "missing fields"}), 400
     session = database.create_session(data)
     return jsonify({"ok": True, "session": session}), 201
 
 
-  @app.get("/messages")
-  def http_get_messages():
+@app.get("/messages")
+def http_get_messages():
     user_a = request.args.get("user_a")
     user_b = request.args.get("user_b")
     session_id = request.args.get("session_id")
     if user_a and user_b:
-      conv = database.get_conversation(user_a, user_b, session_id)
-      return jsonify({"ok": True, "messages": conv})
+        conv = database.get_conversation(user_a, user_b, session_id)
+        return jsonify({"ok": True, "messages": conv})
     return jsonify({"ok": True, "messages": database.get_all_messages()})
 
 
-  @app.post("/messages")
-  def http_create_message():
+@app.post("/messages")
+def http_create_message():
     data = request.get_json(silent=True) or {}
     required = ("sender_id", "receiver_id", "text")
     if not all(k in data for k in required):
-      return jsonify({"ok": False, "error": "missing fields"}), 400
+        return jsonify({"ok": False, "error": "missing fields"}), 400
     message = {
-      "sender_id": data["sender_id"],
-      "receiver_id": data["receiver_id"],
-      "text": data["text"],
-      "session_id": data.get("session_id"),
+        "sender_id": data["sender_id"],
+        "receiver_id": data["receiver_id"],
+        "text": data["text"],
+        "session_id": data.get("session_id"),
     }
     created = database.create_message(message)
     return jsonify({"ok": True, "message": created}), 201
 
 
-  @app.get("/feedback")
-  def http_list_feedback():
+@app.get("/feedback")
+def http_list_feedback():
     user_id = request.args.get("user_id")
     if user_id:
-      fb_list = database.get_feedback_for_user(user_id)
+        fb_list = database.get_feedback_for_user(user_id)
     else:
-      fb_list = database.get_all_feedback()
+        fb_list = database.get_all_feedback()
     return jsonify({"ok": True, "feedback": fb_list})
 
 
-  @app.post("/feedback")
-  def http_create_feedback():
+@app.post("/feedback")
+def http_create_feedback():
     data = request.get_json(silent=True) or {}
     required = ("reviewee_id", "reviewer_id", "rating")
     if not all(k in data for k in required):
-      return jsonify({"ok": False, "error": "missing fields"}), 400
+        return jsonify({"ok": False, "error": "missing fields"}), 400
     feedback = {
-      "reviewee_id": data["reviewee_id"],
-      "reviewer_id": data["reviewer_id"],
-      "rating": data["rating"],
-      "comment": data.get("comment", ""),
-      "session_id": data.get("session_id"),
+        "reviewee_id": data["reviewee_id"],
+        "reviewer_id": data["reviewer_id"],
+        "rating": data["rating"],
+        "comment": data.get("comment", ""),
+        "session_id": data.get("session_id"),
     }
     created = database.create_feedback(feedback)
     return jsonify({"ok": True, "feedback": created}), 201
