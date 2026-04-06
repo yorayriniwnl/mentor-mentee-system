@@ -189,7 +189,42 @@ def root():
                     if(data.ok && Array.isArray(data.sessions) && data.sessions.length){
                       data.sessions.forEach(s=>{
                         const el = document.createElement('div');
-                        el.textContent = `${s.session_id || ''} — ${s.topic || s.concern || ''} — ${s.date || ''} ${s.time || ''} (${s.status || ''})`;
+                        el.style.display = 'flex';
+                        el.style.justifyContent = 'space-between';
+                        el.style.alignItems = 'center';
+                        el.style.padding = '6px 8px';
+
+                        const left = document.createElement('span');
+                        left.textContent = `${s.session_id || ''} — ${s.topic || s.concern || ''} — ${s.date || ''} ${s.time || ''} (${s.status || ''})`;
+                        el.appendChild(left);
+
+                        if((s.status||'').toLowerCase() !== 'cancelled' && (s.status||'').toLowerCase() !== 'completed'){
+                          const btn = document.createElement('button');
+                          btn.textContent = 'Cancel';
+                          btn.style.marginLeft = '12px';
+                          btn.style.padding = '6px 10px';
+                          btn.style.borderRadius = '6px';
+                          btn.style.border = 'none';
+                          btn.style.background = '#f43f5e';
+                          btn.style.color = '#fff';
+                          btn.style.cursor = 'pointer';
+                          btn.onclick = async ()=>{
+                            if(!confirm('Cancel session ' + (s.session_id||'') + '?')) return;
+                            try{
+                              const res = await fetch(`/sessions/${encodeURIComponent(s.session_id)}/cancel`, { method: 'POST' });
+                              const j = await res.json().catch(()=>({ok:false}));
+                              if(res.ok && j.ok){
+                                loadSessions();
+                              } else {
+                                alert(j.error || 'Failed to cancel session');
+                              }
+                            } catch(e){
+                              alert('Network error while cancelling');
+                            }
+                          };
+                          el.appendChild(btn);
+                        }
+
                         container.appendChild(el);
                       });
                     } else {
@@ -318,6 +353,14 @@ def http_create_session():
         return jsonify({"ok": False, "error": "missing fields"}), 400
     session = database.create_session(data)
     return jsonify({"ok": True, "session": session}), 201
+
+
+@app.post("/sessions/<session_id>/cancel")
+def http_cancel_session(session_id):
+  updated = database.update_session(session_id, {"status": "cancelled", "resolved_at": database.now_iso()})
+  if not updated:
+    return jsonify({"ok": False, "error": "not found"}), 404
+  return jsonify({"ok": True, "session": updated})
 
 
 @app.get("/messages")
