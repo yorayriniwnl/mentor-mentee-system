@@ -118,6 +118,12 @@ def root():
                   <strong>Quick Links</strong>
                   <div style="margin-top:8px"><a href="/health">/health</a> • <a href="/demo">/demo</a> • <a href="/?format=json">API metadata</a></div>
                 </div>
+
+                <div class="card" style="margin-top:12px">
+                  <strong>My Sessions</strong>
+                  <div id="sessions" style="margin-top:8px"></div>
+                  <button onclick="loadSessions()" style="margin-top:8px">Refresh sessions</button>
+                </div>
               </div>
             </div>
 
@@ -166,12 +172,35 @@ def root():
                 const data = await res.json().catch(()=>({ok:false,error:'Invalid response'}));
                 if(res.ok && data.ok){
                   document.getElementById('session_status').innerText = 'Created session: '+(data.session.session_id||'');
+                  loadSessions();
                 } else {
                   document.getElementById('session_status').innerText = data.error || 'Failed to create session';
                 }
               }
 
-              window.addEventListener('load', ()=>{ loadMentors(); });
+                async function loadSessions(){
+                  const userId = (window.currentUser && window.currentUser.user_id) || '';
+                  const url = userId ? `/sessions?user_id=${encodeURIComponent(userId)}` : '/sessions';
+                  try{
+                    const res = await fetch(url);
+                    const data = await res.json().catch(()=>({ok:false}));
+                    const container = document.getElementById('sessions');
+                    container.innerHTML = '';
+                    if(data.ok && Array.isArray(data.sessions) && data.sessions.length){
+                      data.sessions.forEach(s=>{
+                        const el = document.createElement('div');
+                        el.textContent = `${s.session_id || ''} — ${s.topic || s.concern || ''} — ${s.date || ''} ${s.time || ''} (${s.status || ''})`;
+                        container.appendChild(el);
+                      });
+                    } else {
+                      container.textContent = 'No sessions found.';
+                    }
+                  } catch(e){
+                    document.getElementById('sessions').innerText = 'Error loading sessions';
+                  }
+                }
+
+                window.addEventListener('load', ()=>{ loadMentors(); loadSessions(); });
             </script>
           </main>
         </body>
