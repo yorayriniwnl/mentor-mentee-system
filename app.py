@@ -59,117 +59,120 @@ def root():
         <!doctype html>
         <html lang="en">
         <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <meta charset="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
           <title>Mentor Mentee System</title>
           <style>
-            :root {
-              color-scheme: dark;
-              --bg: #07111f;
-              --panel: rgba(8, 17, 32, 0.82);
-              --line: rgba(148, 163, 184, 0.18);
-              --text: #e5eefb;
-              --muted: #9fb2c9;
-              --accent: #22d3ee;
-              --accent-2: #38bdf8;
-            }
-            * { box-sizing: border-box; }
-            body {
-              margin: 0;
-              min-height: 100vh;
-              font-family: "Segoe UI", sans-serif;
-              color: var(--text);
-              background:
-                radial-gradient(circle at top, rgba(56, 189, 248, 0.28), transparent 38%),
-                linear-gradient(160deg, #020617 0%, var(--bg) 100%);
-              display: grid;
-              place-items: center;
-              padding: 24px;
-            }
-            main {
-              width: min(760px, 100%);
-              padding: 32px;
-              border: 1px solid var(--line);
-              border-radius: 24px;
-              background: var(--panel);
-              backdrop-filter: blur(12px);
-              box-shadow: 0 24px 70px rgba(2, 6, 23, 0.45);
-            }
-            .eyebrow {
-              color: var(--accent);
-              font-size: 0.84rem;
-              font-weight: 700;
-              letter-spacing: 0.12em;
-              text-transform: uppercase;
-            }
-            h1 {
-              margin: 12px 0;
-              font-size: clamp(2rem, 4vw, 3.2rem);
-              line-height: 1.05;
-            }
-            p {
-              color: var(--muted);
-              font-size: 1rem;
-              line-height: 1.7;
-              margin: 0 0 16px;
-            }
-            .grid {
-              display: grid;
-              gap: 16px;
-              grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-              margin-top: 24px;
-            }
-            .card {
-              border: 1px solid var(--line);
-              border-radius: 18px;
-              padding: 18px;
-              background: rgba(15, 23, 42, 0.66);
-            }
-            .card strong {
-              display: block;
-              margin-bottom: 8px;
-              color: var(--text);
-            }
-            a {
-              color: var(--accent-2);
-              text-decoration: none;
-            }
-            a:hover { text-decoration: underline; }
-            code {
-              color: var(--text);
-              background: rgba(15, 23, 42, 0.9);
-              border: 1px solid var(--line);
-              border-radius: 10px;
-              padding: 2px 8px;
-            }
+            :root{color-scheme:dark}
+            body{margin:0;min-height:100vh;font-family:Segoe UI,system-ui,Arial;background:#020617;color:#E5EEF9;display:flex;align-items:center;justify-content:center;padding:20px}
+            main{width:min(920px,100%);background:rgba(8,17,32,0.86);padding:28px;border-radius:14px;border:1px solid rgba(148,163,184,0.06);box-shadow:0 20px 60px rgba(2,6,23,0.5)}
+            h1{margin:0 0 6px;font-size:28px}
+            .muted{color:#9fb2c9;margin-bottom:12px}
+            .cols{display:grid;grid-template-columns:320px 1fr;gap:18px}
+            .card{background:rgba(15,23,42,0.6);padding:14px;border-radius:10px;border:1px solid rgba(148,163,184,0.04)}
+            label{display:block;font-weight:600;margin:8px 0 6px}
+            input,select{width:100%;padding:8px;border-radius:6px;border:1px solid #203046;background:#071926;color:#EAF6FF}
+            button{margin-top:10px;padding:8px 12px;border-radius:8px;border:none;background:#22d3ee;color:#042027;font-weight:700;cursor:pointer}
+            #mentors div{padding:6px 8px;border-radius:6px;margin-bottom:6px;background:rgba(2,6,23,0.4);cursor:pointer}
+            #status,#session_status{margin-top:8px;color:#BAE6FD}
           </style>
         </head>
         <body>
           <main>
-            <div class="eyebrow">Vercel Deployment</div>
-            <h1>Mentor Mentee System</h1>
-            <p>
-              This deployment is running the web-safe serverless layer of the project.
-              The full Tkinter desktop GUI from <code>gui.py</code> cannot run inside a browser or on Vercel.
-            </p>
-            <p>
-              You can still use the live diagnostics endpoints below, or run the desktop app locally with
-              <code>python main.py</code>.
-            </p>
-            <div class="grid">
-              <div class="card">
-                <strong>Health Check</strong>
-                <a href="/health">/health</a>
+            <h1>Mentor Mentee System — Demo UI</h1>
+            <div class="muted">Small client to exercise the API endpoints: login, mentors, sessions.</div>
+            <div class="cols">
+              <div>
+                <div class="card">
+                  <strong>Login</strong>
+                  <label for="roll">Roll No.</label>
+                  <input id="roll" placeholder="e.g. 20BCS123" />
+                  <label for="pass">Password</label>
+                  <input id="pass" type="password" placeholder="password" />
+                  <button onclick="login()">Log In</button>
+                  <div id="status"></div>
+                </div>
+
+                <div class="card" style="margin-top:12px">
+                  <strong>Mentors</strong>
+                  <div id="mentors" style="margin-top:8px"></div>
+                </div>
               </div>
-              <div class="card">
-                <strong>Demo Output</strong>
-                <a href="/demo">/demo</a>
-              </div>
-              <div class="card">
-                <strong>API Metadata</strong>
-                <a href="/?format=json">/?format=json</a>
+
+              <div>
+                <div class="card">
+                  <strong>Create Session</strong>
+                  <label for="mentor_id">Mentor ID</label>
+                  <input id="mentor_id" placeholder="Select mentor or paste ID" />
+                  <label for="mentee_id">Mentee ID</label>
+                  <input id="mentee_id" placeholder="Your user_id (optional if logged in)" />
+                  <label for="date">Date</label>
+                  <input id="date" type="date" />
+                  <label for="time">Time</label>
+                  <input id="time" type="time" />
+                  <button onclick="createSession()">Create Session</button>
+                  <div id="session_status"></div>
+                </div>
+
+                <div class="card" style="margin-top:12px">
+                  <strong>Quick Links</strong>
+                  <div style="margin-top:8px"><a href="/health">/health</a> • <a href="/demo">/demo</a> • <a href="/?format=json">API metadata</a></div>
+                </div>
               </div>
             </div>
+
+            <script>
+              async function login(){
+                const roll = document.getElementById('roll').value.trim();
+                const pass = document.getElementById('pass').value;
+                if(!roll||!pass){document.getElementById('status').innerText='Enter roll and password';return}
+                const res = await fetch('/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({roll_no:roll,password:pass})});
+                const data = await res.json().catch(()=>({ok:false,error:'Invalid response'}));
+                if(res.ok && data.ok){
+                  document.getElementById('status').innerText = 'Logged in: '+(data.user.name||data.user.roll_no);
+                  window.currentUser = data.user;
+                  document.getElementById('mentee_id').value = data.user.user_id || '';
+                } else {
+                  document.getElementById('status').innerText = data.error || 'Login failed';
+                }
+                loadMentors();
+              }
+
+              async function loadMentors(){
+                const res = await fetch('/mentors');
+                const data = await res.json().catch(()=>({ok:false}));
+                const container = document.getElementById('mentors');
+                container.innerHTML='';
+                if(data.ok && data.mentors && data.mentors.length){
+                  data.mentors.forEach(m=>{
+                    const el = document.createElement('div');
+                    el.textContent = (m.name||m.roll_no||'(no name)') + ' — ' + (m.email||'');
+                    el.dataset.id = m.user_id;
+                    el.onclick = ()=> document.getElementById('mentor_id').value = m.user_id;
+                    container.appendChild(el);
+                  })
+                } else {
+                  container.textContent = 'No mentors available.';
+                }
+              }
+
+              async function createSession(){
+                const mentor_id = document.getElementById('mentor_id').value.trim();
+                const mentee_id = (window.currentUser && window.currentUser.user_id) || document.getElementById('mentee_id').value.trim();
+                const date = document.getElementById('date').value;
+                const time = document.getElementById('time').value;
+                if(!mentor_id||!mentee_id||!date||!time){document.getElementById('session_status').innerText='Please fill all fields';return}
+                const res = await fetch('/sessions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mentor_id,mentee_id,date,time})});
+                const data = await res.json().catch(()=>({ok:false,error:'Invalid response'}));
+                if(res.ok && data.ok){
+                  document.getElementById('session_status').innerText = 'Created session: '+(data.session.session_id||'');
+                } else {
+                  document.getElementById('session_status').innerText = data.error || 'Failed to create session';
+                }
+              }
+
+              window.addEventListener('load', ()=>{ loadMentors(); });
+            </script>
           </main>
         </body>
         </html>
