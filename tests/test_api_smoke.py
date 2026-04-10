@@ -1,3 +1,10 @@
+import os
+# Run tests against an in-memory SQLite DB seeded from data.json
+os.environ.setdefault("USE_SQLITE", "1")
+os.environ.setdefault("SQLITE_DB", ":memory:")
+import migrate_to_sqlite
+migrate_to_sqlite.main()
+
 import pytest
 from app import app
 

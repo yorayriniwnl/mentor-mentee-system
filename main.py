@@ -13,9 +13,20 @@ def run_gui():
     """Launch the Tkinter application."""
     try:
         from gui import MentorApp
+    except ModuleNotFoundError as e:
+        missing = e.name or "a required package"
+        package_hints = {
+            "jwt": "PyJWT",
+            "PIL": "Pillow",
+        }
+        install_target = package_hints.get(missing, missing)
+        print(f"GUI unavailable: missing dependency '{missing}'")
+        print(f"Install it with:  python -m pip install {install_target}")
+        print("Or install all project dependencies with:  python -m pip install -r requirements.txt")
+        sys.exit(1)
     except ImportError as e:
         print(f"GUI unavailable: {e}")
-        print("Install dependencies:  pip install bcrypt")
+        print("Install project dependencies with:  python -m pip install -r requirements.txt")
         sys.exit(1)
 
     app = MentorApp()

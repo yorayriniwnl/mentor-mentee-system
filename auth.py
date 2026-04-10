@@ -8,33 +8,75 @@ from typing import Optional, Tuple
 import os
 import jwt
 from datetime import datetime, timezone, timedelta
+import logging
+import uuid
 
 import bcrypt
 
 import database as db
 
+logger = logging.getLogger(__name__)
+
 # JWT configuration
 JWT_SECRET = os.environ.get("JWT_SECRET") or os.environ.get("SECRET_KEY") or "dev-secret"
+JWT_ISSUER = os.environ.get("JWT_ISSUER", "mentor-mentee-app")
+# If operators want strict enforcement in non-dev environments, set REQUIRE_JWT_SECRET=1
+if JWT_SECRET == "dev-secret":
+    logger.warning("Using insecure default JWT secret; set JWT_SECRET env var for production.")
+    if os.environ.get("REQUIRE_JWT_SECRET", "0").lower() in ("1", "true", "yes"):
+        raise RuntimeError("JWT_SECRET must be set in production (set JWT_SECRET env var)")
 
 
 def generate_token(user_id: str, hours: int = 4) -> str:
-    """Generate a JWT for a user_id valid for `hours` hours."""
+    """Generate a JWT for a `user_id` valid for `hours` hours.
+
+    The token uses integer epoch timestamps for `iat`/`exp` to avoid
+    interoperability issues across PyJWT versions.
+    """
     now = datetime.now(timezone.utc)
-    payload = {"user_id": user_id, "iat": now, "exp": now + timedelta(hours=hours)}
+    iat = int(now.timestamp())
+    exp = int((now + timedelta(hours=hours)).timestamp())
+    # Include a unique token id (jti) so tokens can be revoked if needed
+    jti = uuid.uuid4().hex
+    payload = {"user_id": user_id, "iat": iat, "exp": exp, "iss": JWT_ISSUER, "jti": jti}
     token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
-    # PyJWT may return bytes in older versions — ensure string
+    try:
+        # Record token issuance in the persistence layer (best-effort)
+        db.create_token(jti, user_id)
+    except Exception:
+        logger.debug("Failed to record token issuance (non-fatal)")
     if isinstance(token, bytes):
         token = token.decode("utf-8")
     return token
 
 
 def decode_token(token: str) -> Optional[dict]:
-    """Decode a JWT and return the payload, or None on error/expiry."""
+    """Decode a JWT and return the payload, or None on error/expiry.
+
+    Returns None on any validation error (expired/invalid). Logs details
+    at debug level for operators.
+    """
     try:
-        return jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"], options={"require": ["exp", "iat"]})
+        # Basic issuer check if present
+        if payload.get("iss") and payload.get("iss") != JWT_ISSUER:
+            logger.debug("token issuer mismatch: %s", payload.get("iss"))
+            return None
+        # Optional revocation check (backends may implement is_token_revoked)
+        jti = payload.get("jti")
+        try:
+            if jti and hasattr(db, "is_token_revoked") and db.is_token_revoked(jti):
+                logger.debug("token has been revoked: %s", jti)
+                return None
+        except Exception:
+            # Non-fatal: if backend doesn't support this, continue
+            logger.debug("token revocation check failed (continuing)")
+        return payload
     except jwt.ExpiredSignatureError:
+        logger.debug("JWT expired")
         return None
-    except Exception:
+    except jwt.InvalidTokenError as e:
+        logger.debug("Invalid JWT: %s", e)
         return None
 
 # ─────────────────────────── Password helpers ───────────────────

@@ -134,6 +134,16 @@
       "school": "SCSE",
       "program": "B.Tech. (Computer Science & Engineering)",
       "semester": "2nd Stage"
+    },
+    {
+      "name": "Test Mentee",
+      "roll_no": "TST_CANCEL_001",
+      "email": "t_cancel@example.com",
+      "role": "mentee",
+      "password": "$2b$12$zsVszH4PHMbbDgbZ9VM60.KronhckN296pQK4IePgi52PFfIR2qEW",
+      "user_id": "u045cc8a6",
+      "sessions_completed": 0,
+      "rating": 0.0
     }
   ],
   "sessions": [
@@ -189,6 +199,66 @@
       "requested_at": "2026-03-28T12:59:10.615683",
       "session_id": "S281AC461",
       "notes": ""
+    },
+    {
+      "date": "2026-04-07",
+      "mentee_id": "u045cc8a6",
+      "mentor_id": "u_mentor_003",
+      "time": "09:00",
+      "session_id": "S1A315949",
+      "status": "cancelled",
+      "notes": "",
+      "resolved_at": "2026-04-06T08:16:27.636462+00:00"
+    },
+    {
+      "date": "2026-04-07",
+      "mentee_id": "u045cc8a6",
+      "mentor_id": "u_mentor_003",
+      "time": "09:00",
+      "session_id": "SB3A9A602",
+      "status": "cancelled",
+      "notes": "",
+      "resolved_at": "2026-04-06T08:22:45.096143+00:00"
+    },
+    {
+      "date": "2026-04-07",
+      "mentee_id": "u045cc8a6",
+      "mentor_id": "u_mentor_003",
+      "time": "09:00",
+      "session_id": "S5CB379D9",
+      "status": "cancelled",
+      "notes": "",
+      "resolved_at": "2026-04-06T08:22:52.160404+00:00"
+    },
+    {
+      "date": "2026-04-07",
+      "mentee_id": "u045cc8a6",
+      "mentor_id": "u_mentor_003",
+      "time": "09:00",
+      "session_id": "S6F570B8F",
+      "status": "cancelled",
+      "notes": "",
+      "resolved_at": "2026-04-06T08:27:21.404894+00:00"
+    },
+    {
+      "date": "2026-04-07",
+      "mentee_id": "u045cc8a6",
+      "mentor_id": "u_mentor_003",
+      "time": "09:00",
+      "session_id": "S34D2B3A7",
+      "status": "cancelled",
+      "notes": "",
+      "resolved_at": "2026-04-06T08:32:29.345206+00:00"
+    },
+    {
+      "date": "2026-04-07",
+      "mentee_id": "u045cc8a6",
+      "mentor_id": "u_mentor_003",
+      "time": "09:00",
+      "session_id": "S2C899F8A",
+      "status": "cancelled",
+      "notes": "",
+      "resolved_at": "2026-04-06T08:36:41.795699+00:00"
     }
   ],
   "messages": [
@@ -261,6 +331,26 @@
       "message_id": "m1c99c17c",
       "timestamp": "2026-03-28T12:38:25.877937",
       "session_id": "S6FF480DC"
+    },
+    {
+      "sender_id": "u_mentee_001",
+      "receiver_id": "u_mentor_003",
+      "content": "Thanks for the session!",
+      "flagged": false,
+      "session_id": "S281AC461",
+      "text": "Thanks for the session!",
+      "message_id": "mc798c89b",
+      "timestamp": "2026-04-09T18:02:13.183709+00:00"
+    },
+    {
+      "sender_id": "u_mentee_001",
+      "receiver_id": "u_mentor_003",
+      "content": "Thanks for the session!",
+      "flagged": false,
+      "session_id": "S281AC461",
+      "text": "Thanks for the session!",
+      "message_id": "m6f2a5bc4",
+      "timestamp": "2026-04-09T18:04:59.049166+00:00"
     }
   ],
   "feedback": [
