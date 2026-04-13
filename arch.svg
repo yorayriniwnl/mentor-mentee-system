@@ -1,0 +1,81 @@
+<svg width="860" height="320" viewBox="0 0 860 320" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<style>
+.box{fill:#0d0018;stroke:#3a0a28;stroke-width:0.8}
+.eng{fill:#1a0028;stroke:#6a1a48;stroke-width:0.8}
+.lbl{font-family:Georgia,serif;font-size:11px;fill:#9b6a82;letter-spacing:5px}
+.title{font-family:Georgia,serif;font-size:13px;font-style:italic;fill:#f4a7c3}
+.sub{font-family:Georgia,serif;font-size:10px;fill:#6a3a52}
+.arr{stroke:#4a1a38;stroke-width:0.7;fill:none;marker-end:url(#arrowhead)}
+</style>
+<marker id="arrowhead" markerWidth="6" markerHeight="4" refX="5" refY="2" orient="auto">
+<polygon points="0 0, 6 2, 0 4" fill="#4a1a38"/>
+</marker>
+</defs>
+<rect width="860" height="320" fill="#06000e" rx="8"/>
+
+<!-- Layer labels -->
+<text x="30" y="68" class="lbl">CLIENT</text>
+<text x="30" y="168" class="lbl">API</text>
+<text x="30" y="248" class="lbl">DATA</text>
+
+<!-- Client layer -->
+<rect x="120" y="44" width="140" height="52" rx="6" class="box"/>
+<text x="190" y="66" class="title" text-anchor="middle">Vercel Web</text>
+<text x="190" y="82" class="sub" text-anchor="middle">Flask · serverless</text>
+
+<rect x="290" y="44" width="140" height="52" rx="6" class="box"/>
+<text x="360" y="66" class="title" text-anchor="middle">Tkinter GUI</text>
+<text x="360" y="82" class="sub" text-anchor="middle">desktop · local only</text>
+
+<rect x="460" y="44" width="140" height="52" rx="6" class="box"/>
+<text x="530" y="66" class="title" text-anchor="middle">REST API</text>
+<text x="530" y="82" class="sub" text-anchor="middle">/api/ · JSON responses</text>
+
+<!-- Auth + Rate limiter -->
+<rect x="120" y="140" width="120" height="48" rx="6" class="box"/>
+<text x="180" y="160" class="title" text-anchor="middle">auth.py</text>
+<text x="180" y="176" class="sub" text-anchor="middle">JWT · sessions</text>
+
+<rect x="262" y="140" width="120" height="48" rx="6" class="box"/>
+<text x="322" y="160" class="title" text-anchor="middle">rate_limiter</text>
+<text x="322" y="176" class="sub" text-anchor="middle">throttle · guards</text>
+
+<!-- Matching engine highlight -->
+<rect x="404" y="132" width="160" height="64" rx="6" class="eng"/>
+<text x="484" y="154" class="title" text-anchor="middle">matching.py</text>
+<text x="484" y="170" class="sub" text-anchor="middle">weighted 0–100 score</text>
+<text x="484" y="184" class="sub" text-anchor="middle">skills · avail · exp · rating</text>
+
+<rect x="584" y="140" width="130" height="48" rx="6" class="box"/>
+<text x="649" y="160" class="title" text-anchor="middle">booking.py</text>
+<text x="649" y="176" class="sub" text-anchor="middle">sessions · feedback</text>
+
+<!-- Data layer -->
+<rect x="120" y="228" width="130" height="48" rx="6" class="box"/>
+<text x="185" y="249" class="title" text-anchor="middle">SQLite / SA</text>
+<text x="185" y="265" class="sub" text-anchor="middle">Alembic migrations</text>
+
+<rect x="272" y="228" width="130" height="48" rx="6" class="box"/>
+<text x="337" y="249" class="title" text-anchor="middle">JSON store</text>
+<text x="337" y="265" class="sub" text-anchor="middle">dev · quick spin-up</text>
+
+<rect x="424" y="228" width="130" height="48" rx="6" class="box"/>
+<text x="489" y="249" class="title" text-anchor="middle">analytics.py</text>
+<text x="489" y="265" class="sub" text-anchor="middle">metrics · reporting</text>
+
+<rect x="576" y="228" width="130" height="48" rx="6" class="box"/>
+<text x="641" y="249" class="title" text-anchor="middle">CI / CD</text>
+<text x="641" y="265" class="sub" text-anchor="middle">GitHub Actions</text>
+
+<!-- Arrows client → api -->
+<line x1="190" y1="96" x2="190" y2="138" class="arr"/>
+<line x1="360" y1="96" x2="340" y2="138" class="arr"/>
+<line x1="530" y1="96" x2="490" y2="138" class="arr"/>
+
+<!-- Arrows api → data -->
+<line x1="185" y1="188" x2="185" y2="226" class="arr"/>
+<line x1="322" y1="188" x2="337" y2="226" class="arr"/>
+<line x1="484" y1="196" x2="489" y2="226" class="arr"/>
+<line x1="649" y1="188" x2="641" y2="226" class="arr"/>
+</svg>
