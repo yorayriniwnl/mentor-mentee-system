@@ -1,197 +1,128 @@
-<table width="100%" bgcolor="#06000e" border="0" cellpadding="0" cellspacing="0">
-<tr><td align="center">
+# YOR // Mentor–Mentee System
 
-<img src="./banner.svg" width="100%" alt="Mentor–Mentee System"/>
+<p align="center">
+  <img src="./banner.svg" width="100%" alt="YOR Mentor–Mentee System" />
+</p>
 
-</td></tr>
+<p align="center">
+  <code>connection infrastructure</code> · <code>Flask API</code> · <code>Tkinter local client</code>
+</p>
 
-<tr><td align="center"><br/>
+This repository contains a small mentorship workflow with a weighted matching engine, JWT authentication, session requests, messaging, feedback, analytics, and two local data paths. The browser surface is intentionally a compact demo client for exercising the API; the desktop client is local-only.
 
-[![](https://img.shields.io/badge/-live%20demo-0d0018?style=for-the-badge&logo=vercel&logoColor=f4a7c3&labelColor=0d0018)](https://mentor-mentee-system.vercel.app)&ensp;[![](https://img.shields.io/badge/-source-0d0018?style=for-the-badge&logo=github&logoColor=f4a7c3&labelColor=0d0018)](https://github.com/yorayriniwnl/mentor-mentee-system)&ensp;[![](https://img.shields.io/badge/Python-3.11-0d0018?style=for-the-badge&logo=python&logoColor=f4a7c3&labelColor=0d0018)](https://python.org)&ensp;[![](https://img.shields.io/badge/Flask-0d0018?style=for-the-badge&logo=flask&logoColor=f4a7c3&labelColor=0d0018)](https://flask.palletsprojects.com)&ensp;[![](https://img.shields.io/badge/Vercel-0d0018?style=for-the-badge&logo=vercel&logoColor=f4a7c3&labelColor=0d0018)](https://vercel.com)
+## Evidence contract
 
-<br/>
+| Surface | State | What that means |
+| --- | --- | --- |
+| Flask API | `VERIFIED` | Covered by the repository's smoke and workflow tests. |
+| Browser client | `DEMO` | A thin client for login, mentor selection, and session requests. |
+| Matching engine | `EXPERIMENTAL` | Weighted scoring logic is available, but this is not a production recommendation system. |
+| Tkinter GUI | `EXPERIMENTAL` | A local desktop path sharing the same modules; not available on Vercel. |
+| Vercel deployment | `UNVERIFIED` | Deployment configuration exists; run a live probe before making availability claims. |
 
-> *Some connections don't happen by accident.*
-> *They happen because something underneath decided they should.*
+The repository does not claim production privacy, moderation, scheduling guarantees, or institutional approval. Configure secrets and a durable database before handling real users.
 
-<br/>
+## Architecture
 
-</td></tr>
+<p align="center">
+  <img src="./arch.svg" width="92%" alt="YOR system architecture" />
+</p>
 
-<tr><td bgcolor="#0a0015" align="center"><br/>
-<sub><i>✦ &ensp; what this is &ensp; ✦</i></sub>
-<br/><br/>
-</td></tr>
+The same Python modules can be used through:
 
-<tr><td bgcolor="#0a0015" style="padding:0 10%">
+- a Vercel-compatible Flask entrypoint in `api/index.py`;
+- a local Flask server with the browser demo at `/`;
+- the Tkinter app launched by `python main.py`;
+- the CLI walkthrough launched by `python main.py --demo`.
 
-Most mentorship platforms treat matching as a filter — pick a category, get a list. This system treats it as a problem worth solving properly. A weighted scoring engine evaluates every mentor against a mentee across four dimensions — skill overlap, availability, experience depth, and rating credibility — producing a 0–100 compatibility score that accounts for edge cases like new mentors with few sessions (who are penalized slightly until they've earned confidence).
+`database.py` selects the storage implementation. JSON is useful for a quick local run; SQLite and SQLAlchemy/Alembic provide the migration-backed paths.
 
-The architecture runs three ways simultaneously: as a Vercel-deployed serverless API, as a local Flask server, and as a standalone Tkinter desktop app — all sharing the same core logic. The data layer is intentionally dual-track: SQLite with Alembic migrations for production, a JSON fallback for fast local development. Nothing is overengineered. Everything is replaceable.
+## Matching model
 
-<br/><br/>
+`matching.py` returns a score from 0–100 using the following weighted components:
 
-</td></tr>
+| Component | Weight | Rule |
+| --- | ---: | --- |
+| Skill overlap | 40 | Fraction of requested skills covered by the mentor. |
+| Availability overlap | 25 | Fraction of requested days shared with the mentor. |
+| Experience | 20 | Linear score, capped at 15 years. |
+| Rating credibility | 15 | Ratings from mentors with fewer than five completed sessions receive a 25% penalty. |
 
-<tr><td align="center"><br/>
-<sub><i>✦ &ensp; architecture &ensp; ✦</i></sub>
-<br/><br/>
+The score is an explanation aid, not a guarantee of a successful relationship. The source contains `score_breakdown()` for inspecting the component values.
 
-<img src="./arch.svg" width="92%" alt="System architecture"/>
+## API surface
 
-<br/><br/>
-</td></tr>
+Routes are root-level; there is no `/api/` prefix in the current Flask app.
 
-<tr><td bgcolor="#0a0015" align="center"><br/>
-<sub><i>✦ &ensp; how the matching engine works &ensp; ✦</i></sub>
-<br/><br/>
-</td></tr>
+| Method | Route | Auth | Purpose |
+| --- | --- | --- | --- |
+| `GET` | `/` | No | HTML demo client or JSON metadata with `?format=json`. |
+| `GET` | `/health` | No | Liveness probe. |
+| `GET` | `/demo` | No | Isolated CLI walkthrough output as JSON. |
+| `POST` | `/login` | No | Credential check without issuing a token. |
+| `POST` | `/token` | No | Credential check and JWT issuance. |
+| `GET` | `/me` | Bearer | Return the authenticated profile. |
+| `GET/POST` | `/users` | Mixed | List users or create a user. |
+| `GET` | `/users/<user_id>` | No | Read a public profile projection. |
+| `GET` | `/mentors` | No | List mentor profile projections. |
+| `GET/POST` | `/sessions` | Mixed | List or create session requests. |
+| `GET/PUT` | `/sessions/<session_id>` | Mixed | Read or update a session. |
+| `POST` | `/sessions/<session_id>/cancel` | Bearer | Cancel a session. |
+| `GET/POST` | `/messages` | Mixed | Read or create messages. |
+| `GET/POST` | `/feedback` | Mixed | Read or create feedback. |
 
-<tr><td bgcolor="#0a0015" style="padding:0 10% 2% 10%">
+Protected writes expect `Authorization: Bearer <token>`. The browser demo keeps the token in memory and is for local/API exploration, not a complete account experience.
 
-Every mentor-mentee pair receives a score out of 100, broken down as:
+## Run locally
 
-```python
-# matching.py — scoring breakdown
-W_SKILLS       = 40   # Jaccard overlap: mentor skills ∩ mentee wants / mentee wants
-W_AVAILABILITY = 25   # shared available days, proportional
-W_EXPERIENCE   = 20   # years, linear up to 15yr ceiling
-W_RATING       = 15   # effective rating — penalised 25% if < 5 sessions completed
-```
-
-A mentor with 0 sessions and a perfect 5.0 rating scores the same on the rating component as one with 4.2 and 20 sessions. Credibility is earned, not assumed.
-
-<br/><br/>
-
-</td></tr>
-
-<tr><td align="center"><br/>
-<sub><i>✦ &ensp; tech stack &ensp; ✦</i></sub>
-<br/><br/>
-
-<table align="center" bgcolor="#0d0018" border="0" cellpadding="10" cellspacing="1" width="80%">
-<tr bgcolor="#120020">
-<td><sub><b>Layer</b></sub></td>
-<td><sub><b>Technology</b></sub></td>
-<td><sub><b>Why</b></sub></td>
-</tr>
-<tr bgcolor="#0d0018">
-<td><sub>API framework</sub></td>
-<td><sub>Flask</sub></td>
-<td><sub>Thin, composable, deploys to Vercel as serverless with zero config change</sub></td>
-</tr>
-<tr bgcolor="#0a0015">
-<td><sub>Desktop GUI</sub></td>
-<td><sub>Tkinter</sub></td>
-<td><sub>Ships with Python — no install friction for local institutional use</sub></td>
-</tr>
-<tr bgcolor="#0d0018">
-<td><sub>Primary DB</sub></td>
-<td><sub>SQLite + SQLAlchemy</sub></td>
-<td><sub>File-based, zero-infra, Alembic handles schema evolution cleanly</sub></td>
-</tr>
-<tr bgcolor="#0a0015">
-<td><sub>Dev datastore</sub></td>
-<td><sub>JSON (data.json)</sub></td>
-<td><sub>Spin up instantly with no migrations — swappable via database.py interface</sub></td>
-</tr>
-<tr bgcolor="#0d0018">
-<td><sub>Auth</sub></td>
-<td><sub>auth.py (JWT)</sub></td>
-<td><sub>Stateless — works identically across serverless and local environments</sub></td>
-</tr>
-<tr bgcolor="#0a0015">
-<td><sub>Rate limiting</sub></td>
-<td><sub>rate_limiter.py</sub></td>
-<td><sub>Custom throttle layer to protect matching and booking endpoints</sub></td>
-</tr>
-<tr bgcolor="#0d0018">
-<td><sub>Migrations</sub></td>
-<td><sub>Alembic</sub></td>
-<td><sub>Schema versioning without an ORM lock-in</sub></td>
-</tr>
-<tr bgcolor="#0a0015">
-<td><sub>CI / CD</sub></td>
-<td><sub>GitHub Actions</sub></td>
-<td><sub>Test + lint on every push, deploy to Vercel on merge to main</sub></td>
-</tr>
-</table>
-
-<br/><br/>
-</td></tr>
-
-<tr><td bgcolor="#0a0015" align="center"><br/>
-<sub><i>✦ &ensp; get started &ensp; ✦</i></sub>
-<br/><br/>
-</td></tr>
-
-<tr><td bgcolor="#0a0015" style="padding:0 10% 2% 10%">
-
-**Step 1 — Clone and install**
 ```bash
-git clone https://github.com/yorayriniwnl/mentor-mentee-system.git
-cd mentor-mentee-system
-pip install -r requirements.txt
-```
+python -m pip install -r requirements.txt
 
-**Step 2 — Run the API server**
-```bash
+# Browser demo + API
 python -m flask --app app run --port 3000
-# API is live at http://127.0.0.1:3000
-```
 
-**Step 3 — Or run the desktop GUI**
-```bash
+# CLI workflow walkthrough
+python main.py --demo
+
+# Local desktop client
 python main.py
-# Opens the Tkinter interface — no browser needed
 ```
 
-**Optional: set up the SQLite database with migrations**
+Optional migration-backed setup:
+
 ```bash
-python setup_db.py          # initialise schema
-alembic upgrade head        # apply all migrations
+python setup_db.py
+alembic upgrade head
 ```
 
-`.env.example`
-```env
-SECRET_KEY=your_jwt_secret_here
-DATABASE_URL=sqlite:///mentorship.db
-FLASK_ENV=development
+At minimum, set a strong `JWT_SECRET`/`SECRET_KEY` outside of local demo mode and select a durable database before deployment.
+
+## Verification
+
+Run the same checks used for this repository slice:
+
+```bash
+python scripts/check_design_tokens.py
+python -m pytest -q
+python -m compileall -q .
 ```
 
-<br/><br/>
+The Redis-specific throttle test is skipped when Redis is unavailable. The CI workflow also exercises SQLite, ORM, and Redis paths in separate jobs.
 
-</td></tr>
+## YOR visual contract
 
-<tr><td align="center"><br/>
-<sub><i>✦ &ensp; api endpoints &ensp; ✦</i></sub>
-<br/><br/>
+The visual source of truth is [`design/yor-tokens.json`](./design/yor-tokens.json). The browser client uses:
 
-<table align="center" bgcolor="#0d0018" border="0" cellpadding="10" cellspacing="1" width="80%">
-<tr bgcolor="#120020">
-<td><sub><b>Method</b></sub></td>
-<td><sub><b>Endpoint</b></sub></td>
-<td><sub><b>What it does</b></sub></td>
-</tr>
-<tr bgcolor="#0d0018"><td><sub>POST</sub></td><td><sub>/api/auth/login</sub></td><td><sub>Authenticate, return JWT</sub></td></tr>
-<tr bgcolor="#0a0015"><td><sub>GET</sub></td><td><sub>/api/matches/&lt;mentee_id&gt;</sub></td><td><sub>Top-N scored mentors for a mentee</sub></td></tr>
-<tr bgcolor="#0d0018"><td><sub>GET</sub></td><td><sub>/api/matches/&lt;mentor_id&gt;/&lt;mentee_id&gt;</sub></td><td><sub>Full score breakdown for a pair</sub></td></tr>
-<tr bgcolor="#0a0015"><td><sub>POST</sub></td><td><sub>/api/booking</sub></td><td><sub>Book a session</sub></td></tr>
-<tr bgcolor="#0d0018"><td><sub>POST</sub></td><td><sub>/api/feedback</sub></td><td><sub>Submit session feedback</sub></td></tr>
-<tr bgcolor="#0a0015"><td><sub>GET</sub></td><td><sub>/api/analytics</sub></td><td><sub>Platform-wide metrics</sub></td></tr>
-</table>
+- void black `#000000` and graphite `#050505`;
+- crimson `#e84b4b`, deep crimson `#671515`, and signal `#ff8a7f`;
+- warm white `#f5eaea` and muted gray `#c4c4c4`;
+- crimson field gradient `#671515` → `#8c1616` → `#2a0505`;
+- grid, noise, mono annotations, serif hierarchy, and explicit evidence states.
 
-<br/><br/>
-</td></tr>
+Check the contract with `python scripts/check_design_tokens.py` after changing the landing surface or documentation.
 
-<tr><td align="center">
-<br/>
-<sub><i>built because good connections deserve better infrastructure than a spreadsheet.</i></sub>
-<br/><br/>
-</td></tr>
+## Project boundary
 
-<tr><td align="center">
-<img src="https://capsule-render.vercel.app/api?type=waving&color=04000a,1a0028,2a0038,1a0028,04000a&height=100&section=footer&fontColor=f4a7c3"/>
-</td></tr>
+This is a portfolio-scale reference implementation. Live deployment status, secret configuration, database durability, abuse controls, consent, and institutional workflows remain release gates. Validate those independently before presenting the system as production-ready.
 
-</table>
+<p align="center"><sub>YOR / good connections deserve better infrastructure than a spreadsheet.</sub></p>

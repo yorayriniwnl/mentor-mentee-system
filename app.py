@@ -48,8 +48,24 @@ def root():
         "name": "Mentor Mentee System",
         "deployment": "vercel",
         "mode": "api",
-        "note": "Desktop Tkinter GUI is not available on Vercel. Use local run for GUI.",
-        "endpoints": ["/", "/health", "/demo"],
+        "note": "The browser surface is a demo client for the API. Use local run for the Tkinter GUI.",
+        "surfaces": {
+            "api_contract": "VERIFIED",
+            "browser_client": "DEMO",
+            "matching_engine": "EXPERIMENTAL",
+            "tkinter_gui": "EXPERIMENTAL",
+        },
+        "endpoints": [
+            "/health",
+            "/demo",
+            "/token",
+            "/me",
+            "/users",
+            "/mentors",
+            "/sessions",
+            "/messages",
+            "/feedback",
+        ],
     }
 
     wants_json = request.args.get("format", "").lower() == "json"
@@ -66,71 +82,109 @@ def root():
         <head>
           <meta charset="utf-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <title>Mentor Mentee System</title>
+          <meta name="theme-color" content="#000000" />
+          <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23000000'/%3E%3Cpath d='M6 6h20v20H6z' fill='%23e84b4b'/%3E%3C/svg%3E" />
+          <title>YOR // Mentor Mentee System</title>
           <style>
-            :root{color-scheme:dark}
-            body{margin:0;min-height:100vh;font-family:Segoe UI,system-ui,Arial;background:#020617;color:#E5EEF9;display:flex;align-items:center;justify-content:center;padding:20px}
-            main{width:min(920px,100%);background:rgba(8,17,32,0.86);padding:28px;border-radius:14px;border:1px solid rgba(148,163,184,0.06);box-shadow:0 20px 60px rgba(2,6,23,0.5)}
-            h1{margin:0 0 6px;font-size:28px}
-            .muted{color:#9fb2c9;margin-bottom:12px}
-            .cols{display:grid;grid-template-columns:320px 1fr;gap:18px}
-            .card{background:rgba(15,23,42,0.6);padding:14px;border-radius:10px;border:1px solid rgba(148,163,184,0.04)}
-            label{display:block;font-weight:600;margin:8px 0 6px}
-            input,select{width:100%;padding:8px;border-radius:6px;border:1px solid #203046;background:#071926;color:#EAF6FF}
-            button{margin-top:10px;padding:8px 12px;border-radius:8px;border:none;background:#22d3ee;color:#042027;font-weight:700;cursor:pointer}
-            #mentors div{padding:6px 8px;border-radius:6px;margin-bottom:6px;background:rgba(2,6,23,0.4);cursor:pointer}
-            #status,#session_status{margin-top:8px;color:#BAE6FD}
+            :root{color-scheme:dark;--yor-void:#000;--yor-graphite:#050505;--yor-crimson:#e84b4b;--yor-deep:#671515;--yor-signal:#ff8a7f;--yor-warm:#f5eaea;--yor-muted:#c4c4c4;--yor-line:rgba(245,234,234,.16)}
+            *{box-sizing:border-box}
+            body{margin:0;min-height:100vh;font-family:Inter,Segoe UI,system-ui,Arial,sans-serif;background:var(--yor-void);color:var(--yor-warm);display:flex;align-items:center;justify-content:center;padding:clamp(16px,4vw,48px);background-image:linear-gradient(rgba(232,75,75,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(232,75,75,.07) 1px,transparent 1px),radial-gradient(circle at 85% 0%,rgba(103,21,21,.34),transparent 34rem);background-size:32px 32px,32px 32px,100% 100%}
+            main{width:min(1080px,100%);background:linear-gradient(145deg,rgba(5,5,5,.97),rgba(20,4,4,.95));padding:clamp(20px,4vw,42px);border:1px solid var(--yor-line);box-shadow:0 28px 100px rgba(103,21,21,.2);position:relative;overflow:hidden}
+            main:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.06;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E")}
+            main>*{position:relative}
+            header{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:28px}
+            .eyebrow,.kicker{font:600 11px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--yor-signal)}
+            h1{margin:8px 0 10px;font-family:Georgia,serif;font-size:clamp(30px,5vw,54px);font-weight:500;letter-spacing:-.04em;line-height:1}
+            .lede{max-width:620px;color:var(--yor-muted);line-height:1.65;margin:0}
+            .status-chip{border:1px solid rgba(232,75,75,.6);color:var(--yor-warm);padding:9px 11px;font:600 10px/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.12em;white-space:nowrap}
+            .cols{display:grid;grid-template-columns:minmax(260px, .78fr) minmax(0, 1.22fr);gap:18px}
+            .stack{display:grid;gap:18px;align-content:start}
+            .card{background:rgba(5,5,5,.72);padding:18px;border:1px solid var(--yor-line);min-width:0}
+            .card-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:14px}
+            .card-title{font-family:Georgia,serif;font-size:22px}
+            .card-note{color:#8e8e8e;font:10px ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.08em;text-transform:uppercase}
+            label{display:block;font:600 11px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--yor-muted);margin:14px 0 7px}
+            input,select{display:block;width:100%;padding:11px 12px;border-radius:0;border:1px solid rgba(245,234,234,.2);background:#080808;color:var(--yor-warm);font:inherit;min-height:42px}
+            input:focus,select:focus{outline:2px solid var(--yor-signal);outline-offset:2px;border-color:var(--yor-signal)}
+            button{margin-top:14px;padding:11px 14px;border:1px solid var(--yor-crimson);border-radius:0;background:var(--yor-crimson);color:#000;font-weight:800;letter-spacing:.04em;cursor:pointer;transition:background .2s,color .2s,transform .2s}
+            button:hover{background:var(--yor-signal)}
+            button:focus-visible{outline:2px solid var(--yor-warm);outline-offset:3px}
+            button:active{transform:translateY(1px)}
+            .secondary{background:transparent;color:var(--yor-warm);border-color:rgba(245,234,234,.3)}
+            .secondary:hover{background:var(--yor-deep);border-color:var(--yor-crimson)}
+            .list{display:grid;gap:8px}
+            #mentors div{padding:11px 12px;border-left:2px solid var(--yor-deep);background:rgba(103,21,21,.12);cursor:pointer;color:var(--yor-muted);transition:border-color .2s,background .2s,color .2s}
+            #mentors div:hover,#mentors div:focus-visible{border-color:var(--yor-signal);background:rgba(103,21,21,.3);color:var(--yor-warm);outline:none}
+            #status,#session_status{margin-top:12px;color:var(--yor-signal);font:12px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;min-height:18px}
+            #sessions{display:grid;gap:8px}
+            .session-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 12px;border:1px solid rgba(245,234,234,.1);background:rgba(245,234,234,.03);color:var(--yor-muted);font-size:13px}
+            .session-copy{min-width:0;overflow-wrap:anywhere}
+            .session-row button{flex:0 0 auto;margin:0;padding:7px 10px;background:transparent;color:var(--yor-signal);border-color:var(--yor-deep);font-size:11px}
+            .session-row button:hover{background:var(--yor-deep);color:var(--yor-warm)}
+            .links{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:10px}
+            a{color:var(--yor-signal);text-underline-offset:3px}
+            a:hover{color:var(--yor-warm)}
+            .footer-line{margin-top:24px;padding-top:14px;border-top:1px solid rgba(245,234,234,.1);display:flex;justify-content:space-between;gap:12px;color:#8e8e8e;font:10px ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.08em;text-transform:uppercase}
+            @media (max-width:760px){body{align-items:flex-start;padding:12px}header{display:block}.status-chip{display:inline-block;margin-top:18px}.cols{grid-template-columns:1fr}.card{padding:16px}.footer-line{display:block}.footer-line span+span{display:block;margin-top:8px}}
+            @media (prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
           </style>
         </head>
         <body>
           <main>
-            <h1>Mentor Mentee System — Demo UI</h1>
-            <div class="muted">Small client to exercise the API endpoints: login, mentors, sessions.</div>
-            <div class="cols">
+            <header>
               <div>
+                <div class="eyebrow">YOR // connection infrastructure</div>
+                <h1>Mentor Mentee System</h1>
+                <p class="lede">A small, auditable client for testing identity, mentor discovery, and session workflow across the shared API.</p>
+              </div>
+              <div class="status-chip">BROWSER / DEMO</div>
+            </header>
+            <div class="cols">
+              <div class="stack">
                 <div class="card">
-                  <strong>Login</strong>
+                  <div class="card-head"><span class="card-title">Access</span><span class="card-note">JWT boundary</span></div>
                   <label for="roll">Roll No.</label>
-                  <input id="roll" placeholder="e.g. 20BCS123" />
+                  <input id="roll" autocomplete="username" placeholder="e.g. 20BCS123" />
                   <label for="pass">Password</label>
-                  <input id="pass" type="password" placeholder="password" />
-                  <button onclick="login()">Log In</button>
-                  <div id="status"></div>
+                  <input id="pass" type="password" autocomplete="current-password" placeholder="password" />
+                  <button type="button" onclick="login()">Authenticate</button>
+                  <div id="status" role="status" aria-live="polite"></div>
                 </div>
 
-                <div class="card" style="margin-top:12px">
-                  <strong>Mentors</strong>
-                  <div id="mentors" style="margin-top:8px"></div>
+                <div class="card">
+                  <div class="card-head"><span class="card-title">Mentor index</span><span class="card-note">Select a target</span></div>
+                  <div id="mentors" class="list" aria-live="polite"></div>
                 </div>
               </div>
 
-              <div>
+              <div class="stack">
                 <div class="card">
-                  <strong>Create Session</strong>
+                  <div class="card-head"><span class="card-title">Request a session</span><span class="card-note">Protected write</span></div>
                   <label for="mentor_id">Mentor ID</label>
                   <input id="mentor_id" placeholder="Select mentor or paste ID" />
                   <label for="mentee_id">Mentee ID</label>
-                  <input id="mentee_id" placeholder="Your user_id (optional if logged in)" />
+                  <input id="mentee_id" placeholder="Filled after authentication" />
                   <label for="date">Date</label>
                   <input id="date" type="date" />
                   <label for="time">Time</label>
                   <input id="time" type="time" />
-                  <button onclick="createSession()">Create Session</button>
-                  <div id="session_status"></div>
+                  <button type="button" onclick="createSession()">Create session request</button>
+                  <div id="session_status" role="status" aria-live="polite"></div>
                 </div>
 
-                <div class="card" style="margin-top:12px">
-                  <strong>Quick Links</strong>
-                  <div style="margin-top:8px"><a href="/health">/health</a> • <a href="/demo">/demo</a> • <a href="/?format=json">API metadata</a></div>
+                <div class="card">
+                  <div class="card-head"><span class="card-title">Evidence links</span><span class="card-note">Read-only probes</span></div>
+                  <div class="links"><a href="/health">health</a><a href="/demo">CLI demo output</a><a href="/?format=json">API metadata</a></div>
                 </div>
 
-                <div class="card" style="margin-top:12px">
-                  <strong>My Sessions</strong>
+                <div class="card">
+                  <div class="card-head"><span class="card-title">Session ledger</span><span class="card-note">Current account</span></div>
                   <div id="sessions" style="margin-top:8px"></div>
-                  <button onclick="loadSessions()" style="margin-top:8px">Refresh sessions</button>
+                  <button type="button" class="secondary" onclick="loadSessions()">Refresh ledger</button>
                 </div>
               </div>
             </div>
+            <div class="footer-line"><span>YOR / matching workflow</span><span>VERIFIED API · DEMO CLIENT · LOCAL GUI</span></div>
 
             <script>
               async function login(){
@@ -157,12 +211,15 @@ def root():
                 const container = document.getElementById('mentors');
                 container.innerHTML='';
                 if(data.ok && data.mentors && data.mentors.length){
-                  data.mentors.forEach(m=>{
-                    const el = document.createElement('div');
-                    el.textContent = (m.name||m.roll_no||'(no name)') + ' — ' + (m.email||'');
-                    el.dataset.id = m.user_id;
-                    el.onclick = ()=> document.getElementById('mentor_id').value = m.user_id;
-                    container.appendChild(el);
+                      data.mentors.forEach(m=>{
+                        const el = document.createElement('div');
+                        el.textContent = (m.name||m.roll_no||'(no name)') + ' — ' + (m.email||'');
+                        el.dataset.id = m.user_id;
+                        el.tabIndex = 0;
+                        el.setAttribute('role', 'button');
+                        el.onclick = ()=> document.getElementById('mentor_id').value = m.user_id;
+                        el.onkeydown = (event)=> { if(event.key === 'Enter' || event.key === ' '){ event.preventDefault(); el.click(); } };
+                        container.appendChild(el);
                   })
                 } else {
                   container.textContent = 'No mentors available.';
@@ -199,25 +256,17 @@ def root():
                     if(data.ok && Array.isArray(data.sessions) && data.sessions.length){
                       data.sessions.forEach(s=>{
                         const el = document.createElement('div');
-                        el.style.display = 'flex';
-                        el.style.justifyContent = 'space-between';
-                        el.style.alignItems = 'center';
-                        el.style.padding = '6px 8px';
+                        el.className = 'session-row';
 
                         const left = document.createElement('span');
+                        left.className = 'session-copy';
                         left.textContent = `${s.session_id || ''} — ${s.topic || s.concern || ''} — ${s.date || ''} ${s.time || ''} (${s.status || ''})`;
                         el.appendChild(left);
 
                         if((s.status||'').toLowerCase() !== 'cancelled' && (s.status||'').toLowerCase() !== 'completed'){
                           const btn = document.createElement('button');
+                          btn.type = 'button';
                           btn.textContent = 'Cancel';
-                          btn.style.marginLeft = '12px';
-                          btn.style.padding = '6px 10px';
-                          btn.style.borderRadius = '6px';
-                          btn.style.border = 'none';
-                          btn.style.background = '#f43f5e';
-                          btn.style.color = '#fff';
-                          btn.style.cursor = 'pointer';
                           btn.onclick = async ()=>{
                             if(!confirm('Cancel session ' + (s.session_id||'') + '?')) return;
                             try{

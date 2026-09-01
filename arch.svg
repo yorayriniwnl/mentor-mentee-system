@@ -1,81 +1,72 @@
-<svg width="860" height="320" viewBox="0 0 860 320" xmlns="http://www.w3.org/2000/svg">
-<defs>
-<style>
-.box{fill:#0d0018;stroke:#3a0a28;stroke-width:0.8}
-.eng{fill:#1a0028;stroke:#6a1a48;stroke-width:0.8}
-.lbl{font-family:Georgia,serif;font-size:11px;fill:#9b6a82;letter-spacing:5px}
-.title{font-family:Georgia,serif;font-size:13px;font-style:italic;fill:#f4a7c3}
-.sub{font-family:Georgia,serif;font-size:10px;fill:#6a3a52}
-.arr{stroke:#4a1a38;stroke-width:0.7;fill:none;marker-end:url(#arrowhead)}
-</style>
-<marker id="arrowhead" markerWidth="6" markerHeight="4" refX="5" refY="2" orient="auto">
-<polygon points="0 0, 6 2, 0 4" fill="#4a1a38"/>
-</marker>
-</defs>
-<rect width="860" height="320" fill="#06000e" rx="8"/>
+<svg width="1100" height="430" viewBox="0 0 1100 430" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M24 0H0V24" stroke="#E84B4B" stroke-opacity=".1"/>
+    </pattern>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0 0L6 3L0 6" stroke="#FF8A7F" stroke-width="1"/>
+    </marker>
+    <style>
+      .label{font:600 11px Consolas,monospace;letter-spacing:3px;fill:#FF8A7F}
+      .title{font:18px Georgia,serif;fill:#F5EAEA}
+      .copy{font:12px Consolas,monospace;fill:#C4C4C4}
+      .box{fill:#050505;stroke:#F5EAEA;stroke-opacity:.2}
+      .hot{fill:#2A0505;stroke:#E84B4B;stroke-opacity:.8}
+      .link{stroke:#FF8A7F;stroke-opacity:.55;stroke-width:1;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1100" height="430" fill="#000000"/>
+  <rect width="1100" height="430" fill="url(#grid)"/>
+  <text x="40" y="40" class="label">YOR // SYSTEM MAP / v1</text>
 
-<!-- Layer labels -->
-<text x="30" y="68" class="lbl">CLIENT</text>
-<text x="30" y="168" class="lbl">API</text>
-<text x="30" y="248" class="lbl">DATA</text>
+  <text x="40" y="86" class="label">SURFACE</text>
+  <rect x="40" y="104" width="230" height="78" rx="2" class="box"/>
+  <text x="60" y="135" class="title">Browser demo</text>
+  <text x="60" y="158" class="copy">Flask HTML client</text>
+  <text x="60" y="174" class="copy">DEMO / root route</text>
+  <rect x="290" y="104" width="230" height="78" rx="2" class="box"/>
+  <text x="310" y="135" class="title">REST API</text>
+  <text x="310" y="158" class="copy">auth + workflow routes</text>
+  <text x="310" y="174" class="copy">VERIFIED / tests</text>
+  <rect x="540" y="104" width="230" height="78" rx="2" class="box"/>
+  <text x="560" y="135" class="title">Tkinter GUI</text>
+  <text x="560" y="158" class="copy">local desktop client</text>
+  <text x="560" y="174" class="copy">EXPERIMENTAL / local</text>
+  <rect x="790" y="104" width="270" height="78" rx="2" class="hot"/>
+  <text x="810" y="135" class="title">CLI walkthrough</text>
+  <text x="810" y="158" class="copy">login → match → request</text>
+  <text x="810" y="174" class="copy">evidence / isolated store</text>
 
-<!-- Client layer -->
-<rect x="120" y="44" width="140" height="52" rx="6" class="box"/>
-<text x="190" y="66" class="title" text-anchor="middle">Vercel Web</text>
-<text x="190" y="82" class="sub" text-anchor="middle">Flask · serverless</text>
+  <text x="40" y="226" class="label">DOMAIN</text>
+  <rect x="40" y="244" width="230" height="78" rx="2" class="box"/>
+  <text x="60" y="275" class="title">auth.py</text>
+  <text x="60" y="298" class="copy">password + JWT</text>
+  <text x="60" y="314" class="copy">identity boundary</text>
+  <rect x="290" y="244" width="230" height="78" rx="2" class="hot"/>
+  <text x="310" y="275" class="title">matching.py</text>
+  <text x="310" y="298" class="copy">weighted score / 0–100</text>
+  <text x="310" y="314" class="copy">skills · time · depth · trust</text>
+  <rect x="540" y="244" width="230" height="78" rx="2" class="box"/>
+  <text x="560" y="275" class="title">booking.py</text>
+  <text x="560" y="298" class="copy">sessions + feedback</text>
+  <text x="560" y="314" class="copy">request lifecycle</text>
+  <rect x="790" y="244" width="270" height="78" rx="2" class="box"/>
+  <text x="810" y="275" class="title">messaging.py</text>
+  <text x="810" y="298" class="copy">conversation records</text>
+  <text x="810" y="314" class="copy">analytics + reporting</text>
 
-<rect x="290" y="44" width="140" height="52" rx="6" class="box"/>
-<text x="360" y="66" class="title" text-anchor="middle">Tkinter GUI</text>
-<text x="360" y="82" class="sub" text-anchor="middle">desktop · local only</text>
+  <text x="40" y="366" class="label">DATA / DELIVERY</text>
+  <rect x="40" y="382" width="310" height="30" rx="2" class="box"/>
+  <text x="58" y="402" class="copy">JSON fallback → SQLite / SQLAlchemy</text>
+  <rect x="380" y="382" width="310" height="30" rx="2" class="box"/>
+  <text x="398" y="402" class="copy">Alembic migrations / durable path</text>
+  <rect x="720" y="382" width="340" height="30" rx="2" class="box"/>
+  <text x="738" y="402" class="copy">GitHub Actions → Vercel config</text>
 
-<rect x="460" y="44" width="140" height="52" rx="6" class="box"/>
-<text x="530" y="66" class="title" text-anchor="middle">REST API</text>
-<text x="530" y="82" class="sub" text-anchor="middle">/api/ · JSON responses</text>
-
-<!-- Auth + Rate limiter -->
-<rect x="120" y="140" width="120" height="48" rx="6" class="box"/>
-<text x="180" y="160" class="title" text-anchor="middle">auth.py</text>
-<text x="180" y="176" class="sub" text-anchor="middle">JWT · sessions</text>
-
-<rect x="262" y="140" width="120" height="48" rx="6" class="box"/>
-<text x="322" y="160" class="title" text-anchor="middle">rate_limiter</text>
-<text x="322" y="176" class="sub" text-anchor="middle">throttle · guards</text>
-
-<!-- Matching engine highlight -->
-<rect x="404" y="132" width="160" height="64" rx="6" class="eng"/>
-<text x="484" y="154" class="title" text-anchor="middle">matching.py</text>
-<text x="484" y="170" class="sub" text-anchor="middle">weighted 0–100 score</text>
-<text x="484" y="184" class="sub" text-anchor="middle">skills · avail · exp · rating</text>
-
-<rect x="584" y="140" width="130" height="48" rx="6" class="box"/>
-<text x="649" y="160" class="title" text-anchor="middle">booking.py</text>
-<text x="649" y="176" class="sub" text-anchor="middle">sessions · feedback</text>
-
-<!-- Data layer -->
-<rect x="120" y="228" width="130" height="48" rx="6" class="box"/>
-<text x="185" y="249" class="title" text-anchor="middle">SQLite / SA</text>
-<text x="185" y="265" class="sub" text-anchor="middle">Alembic migrations</text>
-
-<rect x="272" y="228" width="130" height="48" rx="6" class="box"/>
-<text x="337" y="249" class="title" text-anchor="middle">JSON store</text>
-<text x="337" y="265" class="sub" text-anchor="middle">dev · quick spin-up</text>
-
-<rect x="424" y="228" width="130" height="48" rx="6" class="box"/>
-<text x="489" y="249" class="title" text-anchor="middle">analytics.py</text>
-<text x="489" y="265" class="sub" text-anchor="middle">metrics · reporting</text>
-
-<rect x="576" y="228" width="130" height="48" rx="6" class="box"/>
-<text x="641" y="249" class="title" text-anchor="middle">CI / CD</text>
-<text x="641" y="265" class="sub" text-anchor="middle">GitHub Actions</text>
-
-<!-- Arrows client → api -->
-<line x1="190" y1="96" x2="190" y2="138" class="arr"/>
-<line x1="360" y1="96" x2="340" y2="138" class="arr"/>
-<line x1="530" y1="96" x2="490" y2="138" class="arr"/>
-
-<!-- Arrows api → data -->
-<line x1="185" y1="188" x2="185" y2="226" class="arr"/>
-<line x1="322" y1="188" x2="337" y2="226" class="arr"/>
-<line x1="484" y1="196" x2="489" y2="226" class="arr"/>
-<line x1="649" y1="188" x2="641" y2="226" class="arr"/>
+  <path d="M270 143H286" class="link"/>
+  <path d="M520 143H536" class="link"/>
+  <path d="M770 143H786" class="link"/>
+  <path d="M405 182V240" class="link"/>
+  <path d="M655 182V240" class="link"/>
+  <path d="M905 182V240" class="link"/>
 </svg>

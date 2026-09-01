@@ -1,0 +1,25 @@
+{
+  "name": "YOR / Mentor Mentee System",
+  "version": 1,
+  "palette": {
+    "void": "#000000",
+    "graphite": "#050505",
+    "crimson": "#e84b4b",
+    "deepCrimson": "#671515",
+    "signal": "#ff8a7f",
+    "warmWhite": "#f5eaea",
+    "muted": "#c4c4c4"
+  },
+  "gradient": ["#671515", "#8c1616", "#2a0505"],
+  "surfaces": {
+    "apiContract": "VERIFIED",
+    "browserClient": "DEMO",
+    "matchingEngine": "EXPERIMENTAL",
+    "tkinterGui": "EXPERIMENTAL"
+  },
+  "principles": [
+    "evidence before claims",
+    "protected writes remain visibly distinct",
+    "local fallbacks are labeled"
+  ]
+}
