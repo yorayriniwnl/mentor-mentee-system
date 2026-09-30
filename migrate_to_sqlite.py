@@ -1,9 +1,10 @@
 """
 migrate_to_sqlite.py — Import `data.json` into the SQLite adapter.
 
-This script is safe to run locally. It will back up any existing SQLite
-database at `SQLITE_DB` (or default `data.sqlite3`) and create a fresh
-SQLite database populated from `data.json` in the repository.
+This script is safe to run locally and repeatedly. It backs up an existing
+disk-backed SQLite database and refreshes the selected backend from `data.json`.
+For the SQLAlchemy backend it keeps the database file attached to the existing
+engine and recreates the schema in place.
 
 Usage:
   python migrate_to_sqlite.py
@@ -51,11 +52,17 @@ def main():
         bak = db_file.with_suffix(db_file.suffix + f".bak.{int(time.time())}")
         print(f"Backing up existing DB: {db_file} -> {bak}")
         shutil.copy2(db_file, bak)
-        try:
-            db_file.unlink()
-        except Exception:
-            print("Could not remove existing DB file. Aborting.")
-            sys.exit(1)
+        # The ORM backend may already have a live SQLAlchemy Engine bound to
+        # this path. Unlinking the file underneath that engine can leave later
+        # in-process migration calls attached to stale state. Recreate its
+        # schema in place below instead. The legacy sqlite adapter can safely
+        # replace the file because it opens fresh connections on demand.
+        if not use_orm:
+            try:
+                db_file.unlink()
+            except Exception:
+                print("Could not remove existing DB file. Aborting.")
+                sys.exit(1)
 
     # Ensure schema exists for the selected backend
     try:
