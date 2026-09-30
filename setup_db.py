@@ -29,28 +29,28 @@ def setup():
     data["users"] = [
         {
             "user_id": "u_mentor_003",
-            "name": "Spandan Guha",
-            "roll_no": "M2329027",
-            "email": "spandan.guhafme@kiit.ac.in",
+            "name": "Mentor Three",
+            "roll_no": "MENTOR3",
+            "email": "mentor3@example.test",
             "password": hash_password("MENTOR123"),
             "role": "mentor",
-            "contact_number": "8777601029",
+            "contact_number": "5550100003",
             "skills": ["Computer Science", "Engineering", "Programming", "Academic Guidance"],
             "experience_years": 10,
             "rating": 4.9,
             "sessions_completed": 25,
             "availability": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-            "bio": "Senior faculty member at KIIT providing academic mentorship.",
+            "bio": "Synthetic mentor profile for local development and tests.",
             "hourly_rate": 0.0,
         },
         {
             "user_id": "u_mentor_001",
             "name": "Mentor One",
             "roll_no": "MENTOR1",
-            "email": "mentor1@test.com",
+            "email": "mentor1@example.test",
             "password": hash_password("MENTOR123"),
             "role": "mentor",
-            "contact_number": "9876543210",
+            "contact_number": "5550100001",
             "skills": ["Python", "Django", "REST APIs"],
             "experience_years": 6,
             "rating": 4.8,
@@ -63,10 +63,10 @@ def setup():
             "user_id": "u_mentor_002",
             "name": "Mentor Two",
             "roll_no": "MENTOR2",
-            "email": "mentor2@test.com",
+            "email": "mentor2@example.test",
             "password": hash_password("MENTOR123"),
             "role": "mentor",
-            "contact_number": "9123456780",
+            "contact_number": "5550100002",
             "skills": ["JavaScript", "React", "Node.js", "Web Development"],
             "experience_years": 5,
             "rating": 4.5,
@@ -77,12 +77,12 @@ def setup():
         },
         {
             "user_id": "u_mentee_001",
-            "name": "Ayush Roy",
-            "roll_no": "2329027",
-            "email": "ayush@test.com",
-            "password": hash_password("AYUSH123"),
+            "name": "Demo Student One",
+            "roll_no": "STUDENT1",
+            "email": "student1@example.test",
+            "password": hash_password("STUDENT123"),
             "role": "mentee",
-            "contact_number": "9000000001",
+            "contact_number": "5550200001",
             "skills": ["Python"],
             "experience_years": 1,
             "rating": 4.5,
@@ -90,21 +90,21 @@ def setup():
             "availability": ["Monday", "Friday"],
             "bio": "Junior dev eager to learn.",
             "goals": ["Learn Django", "Build REST APIs"],
-            "reg_no": "23356799027",
+            "reg_no": "DEMO-REG-001",
             "school": "SCSE",
-            "program": "Computer Science and Communication Engineering",
+            "program": "Demo Engineering Program",
             "semester": "6th Stage",
-            "profile_image": "images/profiles/2329027.png",
+            "profile_image": "images/profiles/STUDENT1.png",
             "assigned_mentor_id": "u_mentor_003",
         },
         {
             "user_id": "u_mentee_002",
-            "name": "Student Name",
-            "roll_no": "2329030",
-            "email": "student@test.com",
-            "password": hash_password("AYUSH123"),
+            "name": "Demo Student Two",
+            "roll_no": "STUDENT2",
+            "email": "student2@example.test",
+            "password": hash_password("STUDENT123"),
             "role": "mentee",
-            "contact_number": "9000000002",
+            "contact_number": "5550200002",
             "skills": ["Python", "Web Basics"],
             "experience_years": 0,
             "rating": 0.0,
@@ -112,9 +112,9 @@ def setup():
             "availability": ["Wednesday", "Saturday"],
             "bio": "Student looking to improve programming skills.",
             "goals": ["Learn JavaScript", "Build web apps"],
-            "reg_no": "23356799030",
+            "reg_no": "DEMO-REG-002",
             "school": "SCSE",
-            "program": "B.Tech. (Computer Science & Engineering)",
+            "program": "Demo Engineering Program",
             "semester": "2nd Stage",
         },
     ]
@@ -131,11 +131,11 @@ def setup():
 
     print("✓ Database initialized with test users.")
     print("\nTest credentials:")
-    print("  Roll No: M2329027  | Password: MENTOR123")
+    print("  Roll No: MENTOR3  | Password: MENTOR123")
     print("  Roll No: MENTOR1   | Password: MENTOR123")
     print("  Roll No: MENTOR2   | Password: MENTOR123")
-    print("  Roll No: 2329027   | Password: AYUSH123")
-    print("  Roll No: 2329030   | Password: AYUSH123")
+    print("  Roll No: STUDENT1  | Password: STUDENT123")
+    print("  Roll No: STUDENT2  | Password: STUDENT123")
 
 
 if __name__ == "__main__":

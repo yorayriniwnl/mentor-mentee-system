@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-"""Verify mentor assignment for 2329027."""
+"""Verify mentor assignment for STUDENT1."""
 
 import database as db
 
-ayush = db.get_user_by_roll_no("2329027")
+ayush = db.get_user_by_roll_no("STUDENT1")
 if not ayush:
-    raise SystemExit("Student 2329027 not found.")
+    raise SystemExit("Student STUDENT1 not found.")
 
 mentor = db.get_assigned_mentor(ayush["user_id"])
 
