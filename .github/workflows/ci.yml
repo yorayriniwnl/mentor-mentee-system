@@ -64,10 +64,8 @@ jobs:
           pip install pytest
       - name: Run Alembic migrations
         run: alembic upgrade head
-      - name: Seed DB and run tests
-        run: |
-          python migrate_to_sqlite.py
-          python -m pytest -q
+      - name: Run ORM test suite
+        run: python -m pytest -q
 
   redis-test:
     name: Redis throttle test
