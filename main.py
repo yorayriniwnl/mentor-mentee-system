@@ -52,11 +52,11 @@ def run_demo():
     print(sep)
 
     print("\n[1] Logging in demo users ...")
-    _, mentor_user = auth.login("M2329027", "MENTOR123")
+    _, mentor_user = auth.login("MENTOR3", "MENTOR123")
     mentor_id = mentor_user["user_id"]
     print(f"  [OK] Mentor logged in -> ID: {mentor_id}")
 
-    _, mentee_user = auth.login("2329027", "AYUSH123")
+    _, mentee_user = auth.login("STUDENT1", "STUDENT123")
     mentee_id = mentee_user["user_id"]
     print(f"  [OK] Mentee logged in -> ID: {mentee_id}")
 
