@@ -2,12 +2,12 @@
   "users": [
     {
       "user_id": "u_mentor_003",
-      "name": "Spandan Guha",
-      "roll_no": "M2329027",
-      "email": "spandan.guhafme@kiit.ac.in",
+      "name": "Mentor Three",
+      "roll_no": "MENTOR3",
+      "email": "mentor3@example.test",
       "password": "$2b$12$dGPEtL9nYKteoqNmD6zUNeHsJz0i4z0GOL367scbsP/7c.st0/Puy",
       "role": "mentor",
-      "contact_number": "8777601029",
+      "contact_number": "5550100003",
       "skills": [
         "Computer Science",
         "Engineering",
@@ -24,17 +24,17 @@
         "Thursday",
         "Friday"
       ],
-      "bio": "Senior faculty member at KIIT providing academic mentorship.",
-      "hourly_rate": 0.0
+      "bio": "Synthetic mentor profile for local development and tests.",
+      "hourly_rate": 0
     },
     {
       "user_id": "u_mentor_001",
       "name": "Mentor One",
       "roll_no": "MENTOR1",
-      "email": "mentor1@test.com",
+      "email": "mentor1@example.test",
       "password": "$2b$12$bGHuAbTQBiNpbkF7GXisCeTm8yf3yHJcBHzltEVh7.QpQRKtz0996",
       "role": "mentor",
-      "contact_number": "9876543210",
+      "contact_number": "5550100001",
       "skills": [
         "Python",
         "Django",
@@ -49,16 +49,16 @@
         "Friday"
       ],
       "bio": "Backend engineer, loves teaching.",
-      "hourly_rate": 55.0
+      "hourly_rate": 55
     },
     {
       "user_id": "u_mentor_002",
       "name": "Mentor Two",
       "roll_no": "MENTOR2",
-      "email": "mentor2@test.com",
+      "email": "mentor2@example.test",
       "password": "$2b$12$kEn6FB8lApL1GmUzKSQLWeLALEWT80GdkTJdRNMy8vZTSjbKxMfCy",
       "role": "mentor",
-      "contact_number": "9123456780",
+      "contact_number": "5550100002",
       "skills": [
         "JavaScript",
         "React",
@@ -74,16 +74,16 @@
         "Saturday"
       ],
       "bio": "Full-stack developer specializing in modern web technologies.",
-      "hourly_rate": 50.0
+      "hourly_rate": 50
     },
     {
       "user_id": "u_mentee_001",
-      "name": "Ayush Roy",
-      "roll_no": "2329027",
-      "email": "ayush@test.com",
+      "name": "Demo Student One",
+      "roll_no": "STUDENT1",
+      "email": "student1@example.test",
       "password": "$2b$12$ifnPfzBwY0ds14NKBVDdOODMXm8iVEe/QHzkB40aHBj5EGolbO7wa",
       "role": "mentee",
-      "contact_number": "9000000001",
+      "contact_number": "5550200001",
       "skills": [
         "Python"
       ],
@@ -99,27 +99,27 @@
         "Learn Django",
         "Build REST APIs"
       ],
-      "reg_no": "23356799027",
+      "reg_no": "DEMO-REG-001",
       "school": "SCSE",
-      "program": "Computer Science and Communication Engineering",
-      "semester": "6th Stage",
-      "profile_image": "images/profiles/2329027.png",
+      "program": "Demo Engineering Program",
+      "semester": "Demo Semester",
+      "profile_image": "images/profiles/STUDENT1.png",
       "assigned_mentor_id": "u_mentor_003"
     },
     {
       "user_id": "u_mentee_002",
-      "name": "Student Name",
-      "roll_no": "2329030",
-      "email": "student@test.com",
+      "name": "Demo Student Two",
+      "roll_no": "STUDENT2",
+      "email": "student2@example.test",
       "password": "$2b$12$oYRnAks3K50jE.cOiqqG4OTtMDHgWWD5iK5yhsKN32KIeFQwr8MIa",
       "role": "mentee",
-      "contact_number": "9000000002",
+      "contact_number": "5550200002",
       "skills": [
         "Python",
         "Web Basics"
       ],
       "experience_years": 0,
-      "rating": 0.0,
+      "rating": 0,
       "sessions_completed": 0,
       "availability": [
         "Wednesday",
@@ -130,247 +130,23 @@
         "Learn JavaScript",
         "Build web apps"
       ],
-      "reg_no": "23356799030",
+      "reg_no": "DEMO-REG-002",
       "school": "SCSE",
-      "program": "B.Tech. (Computer Science & Engineering)",
-      "semester": "2nd Stage"
+      "program": "Demo Engineering Program",
+      "semester": "Demo Semester"
     },
     {
       "name": "Test Mentee",
       "roll_no": "TST_CANCEL_001",
-      "email": "t_cancel@example.com",
+      "email": "cancel-test@example.test",
       "role": "mentee",
       "password": "$2b$12$zsVszH4PHMbbDgbZ9VM60.KronhckN296pQK4IePgi52PFfIR2qEW",
       "user_id": "u045cc8a6",
       "sessions_completed": 0,
-      "rating": 0.0
+      "rating": 0
     }
   ],
-  "sessions": [
-    {
-      "mentor_id": "u_mentor_003",
-      "mentee_id": "u_mentee_001",
-      "date": "",
-      "time": "",
-      "duration_minutes": 0,
-      "topic": "Mental Health Issues.",
-      "concern": "Mental Health Issues.",
-      "status": "cancelled",
-      "requested_at": "2026-03-28T10:58:46.684663",
-      "session_id": "SA5510E63",
-      "notes": ""
-    },
-    {
-      "mentor_id": "u_mentor_003",
-      "mentee_id": "u_mentee_001",
-      "date": "",
-      "time": "",
-      "duration_minutes": 0,
-      "topic": "Mental Health Issues.",
-      "concern": "Mental Health Issues.",
-      "status": "cancelled",
-      "requested_at": "2026-03-28T11:03:32.713938",
-      "session_id": "SC52E9BDC",
-      "notes": ""
-    },
-    {
-      "mentor_id": "u_mentor_003",
-      "mentee_id": "u_mentee_001",
-      "date": "",
-      "time": "",
-      "duration_minutes": 0,
-      "topic": "Mental Health Issues.",
-      "concern": "Mental Health Issues.",
-      "status": "completed",
-      "requested_at": "2026-03-28T12:45:19.177621",
-      "session_id": "S6FF480DC",
-      "notes": "",
-      "resolved_at": "2026-03-28T12:50:57.035450"
-    },
-    {
-      "mentor_id": "u_mentor_003",
-      "mentee_id": "u_mentee_001",
-      "date": "",
-      "time": "",
-      "duration_minutes": 0,
-      "topic": "Leave Application Approval.",
-      "concern": "Leave Application Approval.",
-      "status": "requested",
-      "requested_at": "2026-03-28T12:59:10.615683",
-      "session_id": "S281AC461",
-      "notes": ""
-    },
-    {
-      "date": "2026-04-07",
-      "mentee_id": "u045cc8a6",
-      "mentor_id": "u_mentor_003",
-      "time": "09:00",
-      "session_id": "S1A315949",
-      "status": "cancelled",
-      "notes": "",
-      "resolved_at": "2026-04-06T08:16:27.636462+00:00"
-    },
-    {
-      "date": "2026-04-07",
-      "mentee_id": "u045cc8a6",
-      "mentor_id": "u_mentor_003",
-      "time": "09:00",
-      "session_id": "SB3A9A602",
-      "status": "cancelled",
-      "notes": "",
-      "resolved_at": "2026-04-06T08:22:45.096143+00:00"
-    },
-    {
-      "date": "2026-04-07",
-      "mentee_id": "u045cc8a6",
-      "mentor_id": "u_mentor_003",
-      "time": "09:00",
-      "session_id": "S5CB379D9",
-      "status": "cancelled",
-      "notes": "",
-      "resolved_at": "2026-04-06T08:22:52.160404+00:00"
-    },
-    {
-      "date": "2026-04-07",
-      "mentee_id": "u045cc8a6",
-      "mentor_id": "u_mentor_003",
-      "time": "09:00",
-      "session_id": "S6F570B8F",
-      "status": "cancelled",
-      "notes": "",
-      "resolved_at": "2026-04-06T08:27:21.404894+00:00"
-    },
-    {
-      "date": "2026-04-07",
-      "mentee_id": "u045cc8a6",
-      "mentor_id": "u_mentor_003",
-      "time": "09:00",
-      "session_id": "S34D2B3A7",
-      "status": "cancelled",
-      "notes": "",
-      "resolved_at": "2026-04-06T08:32:29.345206+00:00"
-    },
-    {
-      "date": "2026-04-07",
-      "mentee_id": "u045cc8a6",
-      "mentor_id": "u_mentor_003",
-      "time": "09:00",
-      "session_id": "S2C899F8A",
-      "status": "cancelled",
-      "notes": "",
-      "resolved_at": "2026-04-06T08:36:41.795699+00:00"
-    }
-  ],
-  "messages": [
-    {
-      "message_id": "m001",
-      "sender_id": "u003",
-      "receiver_id": "u001",
-      "content": "Hi Alice, I am excited to start learning ML!",
-      "timestamp": "2026-03-25T09:00:00",
-      "flagged": false
-    },
-    {
-      "message_id": "m002",
-      "sender_id": "u001",
-      "receiver_id": "u003",
-      "content": "Welcome Carol! We will have a great session.",
-      "timestamp": "2026-03-25T09:05:00",
-      "flagged": false
-    },
-    {
-      "sender_id": "u_mentee_001",
-      "receiver_id": "u_mentor_003",
-      "content": "Good Morning Sir.",
-      "flagged": false,
-      "message_id": "mbbdb877d",
-      "timestamp": "2026-03-28T11:10:24.931856",
-      "session_id": "S6FF480DC"
-    },
-    {
-      "sender_id": "u_mentee_001",
-      "receiver_id": "u_mentor_003",
-      "content": "I am facing some mental health issue.",
-      "flagged": false,
-      "message_id": "m3ba1668e",
-      "timestamp": "2026-03-28T12:10:41.500360",
-      "session_id": "S6FF480DC"
-    },
-    {
-      "sender_id": "u_mentor_003",
-      "receiver_id": "u_mentee_001",
-      "content": "Good Afternoon Ayush.",
-      "flagged": false,
-      "message_id": "m757f121e",
-      "timestamp": "2026-03-28T12:37:15.757444",
-      "session_id": "S6FF480DC"
-    },
-    {
-      "sender_id": "u_mentor_003",
-      "receiver_id": "u_mentee_001",
-      "content": "I hope you are fine.",
-      "flagged": false,
-      "message_id": "m1b341cca",
-      "timestamp": "2026-03-28T12:37:25.463800",
-      "session_id": "S6FF480DC"
-    },
-    {
-      "sender_id": "u_mentor_003",
-      "receiver_id": "u_mentee_001",
-      "content": "I booked counselling session with Mental health and academic cell.",
-      "flagged": false,
-      "message_id": "m1767e685",
-      "timestamp": "2026-03-28T12:38:12.762126",
-      "session_id": "S6FF480DC"
-    },
-    {
-      "sender_id": "u_mentor_003",
-      "receiver_id": "u_mentee_001",
-      "content": "I will share details with you by today.",
-      "flagged": false,
-      "message_id": "m1c99c17c",
-      "timestamp": "2026-03-28T12:38:25.877937",
-      "session_id": "S6FF480DC"
-    },
-    {
-      "sender_id": "u_mentee_001",
-      "receiver_id": "u_mentor_003",
-      "content": "Thanks for the session!",
-      "flagged": false,
-      "session_id": "S281AC461",
-      "text": "Thanks for the session!",
-      "message_id": "mc798c89b",
-      "timestamp": "2026-04-09T18:02:13.183709+00:00"
-    },
-    {
-      "sender_id": "u_mentee_001",
-      "receiver_id": "u_mentor_003",
-      "content": "Thanks for the session!",
-      "flagged": false,
-      "session_id": "S281AC461",
-      "text": "Thanks for the session!",
-      "message_id": "m6f2a5bc4",
-      "timestamp": "2026-04-09T18:04:59.049166+00:00"
-    }
-  ],
-  "feedback": [
-    {
-      "feedback_id": "f001",
-      "session_id": "S001",
-      "reviewer_id": "u003",
-      "reviewee_id": "u001",
-      "rating": 5,
-      "comment": "Alice explained everything clearly. Highly recommend!",
-      "timestamp": "2026-03-20T11:00:00"
-    },
-    {
-      "session_id": "S0814C066",
-      "reviewer_id": "u_mentee_001",
-      "reviewee_id": "u_mentor_003",
-      "rating": 5,
-      "comment": "Excellent mentor, very clear explanations!",
-      "feedback_id": "fae87e0fd",
-      "timestamp": "2026-03-28T10:10:49.805974"
-    }
-  ]
+  "sessions": [],
+  "messages": [],
+  "feedback": []
 }
