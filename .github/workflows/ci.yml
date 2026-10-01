@@ -10,6 +10,26 @@ permissions:
   contents: read
 
 jobs:
+  seed-privacy:
+    name: Seed privacy boundary
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Reject institutional identities and real-looking Indian phone numbers
+        shell: bash
+        run: |
+          if grep -En '@kiit\.ac\.in' setup_db.py data.json; then
+            echo "Institutional email found in committed demo seed data"
+            exit 1
+          fi
+          if grep -En '"contact_number"[[:space:]]*:[[:space:]]*"[6-9][0-9]{9}"' setup_db.py data.json; then
+            echo "Real-looking Indian phone number found in committed demo seed data"
+            exit 1
+          fi
+          grep -q '@example.test' setup_db.py
+          grep -q '@example.test' data.json
+
   test:
     name: SQLite tests (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
