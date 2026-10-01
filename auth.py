@@ -18,13 +18,21 @@ import database as db
 logger = logging.getLogger(__name__)
 
 # JWT configuration
-JWT_SECRET = os.environ.get("JWT_SECRET") or os.environ.get("SECRET_KEY") or "dev-secret"
+_configured_secret = os.environ.get("JWT_SECRET") or os.environ.get("SECRET_KEY")
+_runtime_env = (os.environ.get("APP_ENV") or os.environ.get("FLASK_ENV") or "").lower()
+_is_production = (
+    _runtime_env in {"production", "prod"}
+    or os.environ.get("VERCEL_ENV") == "production"
+    or os.environ.get("RENDER") == "true"
+)
+_require_secret = os.environ.get("REQUIRE_JWT_SECRET", "").lower() in ("1", "true", "yes")
+if not _configured_secret and (_is_production or _require_secret):
+    raise RuntimeError("JWT_SECRET must be set for production")
+
+JWT_SECRET = _configured_secret or "dev-secret"
 JWT_ISSUER = os.environ.get("JWT_ISSUER", "mentor-mentee-app")
-# If operators want strict enforcement in non-dev environments, set REQUIRE_JWT_SECRET=1
 if JWT_SECRET == "dev-secret":
-    logger.warning("Using insecure default JWT secret; set JWT_SECRET env var for production.")
-    if os.environ.get("REQUIRE_JWT_SECRET", "0").lower() in ("1", "true", "yes"):
-        raise RuntimeError("JWT_SECRET must be set in production (set JWT_SECRET env var)")
+    logger.warning("Using local-development JWT secret; never use this value in production.")
 
 
 def generate_token(user_id: str, hours: int = 4) -> str:
