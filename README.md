@@ -16,6 +16,23 @@
 
 This repository contains a small mentorship workflow with a weighted matching engine, JWT authentication, session requests, messaging, feedback, analytics, and two local data paths. The browser surface is intentionally a compact demo client for exercising the API; the desktop client is local-only.
 
+<!-- YOR REDLINE / EXPERIENCE V2 -->
+
+<a id="system-map"></a>
+## System map
+
+<div align="center"><picture><source media="(max-width: 600px)" srcset="docs/yor-redline-system-mobile.svg"/><img src="docs/yor-redline-system.svg" width="100%" alt="Mentorship workflow: Profiles and roles → Weighted matching → Session requests → Feedback and analytics"/></picture></div>
+
+| Project signal | Documented scope |
+| :--- | :--- |
+| **Current maturity** | LOCAL DEMO |
+| **Technical focus** | Flask API, weighted matching, JWT authentication, messaging, feedback, and local clients. |
+| **Evidence boundary** | A small mentorship reference implementation; browser and desktop surfaces have separately documented boundaries. |
+
+**Navigate:** [Evidence contract](#evidence-contract) · [Architecture](#architecture) · [Matching model](#matching-model) · [API surface](#api-surface) · [Run locally](#run-locally) · [Verification](#verification) · [YOR visual contract](#yor-visual-contract)
+
+<!-- END YOR REDLINE / EXPERIENCE V2 -->
+
 ## Evidence contract
 
 | Surface | State | What that means |
