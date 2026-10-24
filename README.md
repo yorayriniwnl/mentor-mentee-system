@@ -1,8 +1,14 @@
-# YOR // Mentor–Mentee System
+<!-- YOR REDLINE / README COVER V1 -->
+<div align="center">
 
-<p align="center">
-  <img src="./banner.svg" width="100%" alt="YOR Mentor–Mentee System" />
-</p>
+![mentor-mentee-system | YOR REDLINE](docs/yor-redline-cover.svg)
+
+<sub><strong>YOR / PROJECT DOSSIER</strong> · <a href="https://github.com/yorayriniwnl">GitHub</a> · <a href="https://yorayriniwnl.in">Portfolio</a></sub>
+
+</div>
+<!-- END YOR REDLINE -->
+
+# YOR // Mentor–Mentee System
 
 <p align="center">
   <code>connection infrastructure</code> · <code>Flask API</code> · <code>Tkinter local client</code>
